@@ -362,6 +362,19 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
     endpoint: "https://integrate.api.nvidia.com/v1",
     requiresKey: true,
   },
+  {
+    id: "xsmodel",
+    name: "XS Model (Kronos)",
+    models: [
+      { id: "kronos-mini", name: "Kronos Mini (4.1M)", contextWindow: 2048, provider: "xsmodel" },
+      { id: "kronos-small", name: "Kronos Small (24.7M)", contextWindow: 512, provider: "xsmodel" },
+      { id: "kronos-base", name: "Kronos Base (102.3M)", contextWindow: 512, provider: "xsmodel" },
+      { id: "kronos-large", name: "Kronos Large (499.2M)", contextWindow: 512, provider: "xsmodel" },
+    ],
+    apiKeyFormat: "",
+    endpoint: "http://localhost:8000",
+    requiresKey: false,
+  },
 ]
 
 export const SYSTEM_PROMPT = `You are a financial research assistant for a PAPER TRADING SIMULATOR called TradeSim.

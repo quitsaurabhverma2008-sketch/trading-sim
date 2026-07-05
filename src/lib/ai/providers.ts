@@ -174,6 +174,21 @@ function ollamaHandler(): ProviderHandler {
   }
 }
 
+function xsmodelHandler(apiKey: string, baseUrl?: string): ProviderHandler {
+  const h = openAIHandler(apiKey)
+  return {
+    ...h,
+    buildRequest: (req) => {
+      const r = h.buildRequest(req)
+      return {
+        ...r,
+        url: `${baseUrl || "http://localhost:8000"}/v1/chat/completions`,
+        headers: { "Content-Type": "application/json" },
+      }
+    },
+  }
+}
+
 export function getProviderHandler(providerId: AIProviderId, apiKey: string): ProviderHandler {
   switch (providerId) {
     case "openai": return openAIHandler(apiKey)
@@ -183,6 +198,7 @@ export function getProviderHandler(providerId: AIProviderId, apiKey: string): Pr
     case "openrouter": return openRouterHandler(apiKey)
     case "nvidia": return nvidiaHandler(apiKey)
     case "ollama": return ollamaHandler()
+    case "xsmodel": return xsmodelHandler(apiKey)
     default: return openAIHandler(apiKey)
   }
 }
