@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server"
 import { executeTool } from "@/lib/ai/tools"
-import { fetchKlinesDirect } from "@/lib/market/binance"
 import { calcAllIndicators, findSupportResistance } from "@/lib/market/indicators"
 import type { Candle } from "@/types"
 
@@ -12,9 +11,33 @@ const CRYPTO_SYMBOLS = new Set([
 
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)] }
 
-function num(n: string | number | undefined, d = 0): number {
-  const v = typeof n === "string" ? parseFloat(n) : (n ?? 0)
-  return isNaN(v) ? 0 : Math.round(v * 10 ** d) / 10 ** d
+function sseEncode(obj: Record<string, unknown>): string {
+  return `data: ${JSON.stringify(obj)}\n`
+}
+
+function createSSEResponse(text: string): Response {
+  const encoder = new TextEncoder()
+  const ss = new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoder.encode(sseEncode({ choices: [{ delta: { role: "assistant" }, finish_reason: null }] })))
+      const chars = text.split("")
+      let i = 0
+      function push() {
+        if (i < chars.length) {
+          const chunk = chars.slice(i, i + 5).join("")
+          controller.enqueue(encoder.encode(sseEncode({ choices: [{ delta: { content: chunk }, finish_reason: null }] })))
+          i += 5
+          push()
+        } else {
+          controller.enqueue(encoder.encode(sseEncode({ choices: [{ delta: {}, finish_reason: "stop" }] })))
+          controller.enqueue(encoder.encode("data: [DONE]\n"))
+          controller.close()
+        }
+      }
+      push()
+    },
+  })
+  return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive" } })
 }
 
 interface ChartDataPayload {
@@ -154,24 +177,7 @@ export async function POST(request: NextRequest) {
         const tf = chartPayload.timeframe ?? "1h"
         const analysis = generateFromCandles(candles, sym, tf)
         const full = `## AI Chart Analysis — ${sym}\n\n${analysis}`
-
-        if (stream) {
-          const encoder = new TextEncoder()
-          const ss = new ReadableStream({
-            start(controller) {
-              controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"role":"assistant"},"finish_reason":null}]}\n`))
-              const lines = full.split("\n")
-              for (const line of lines) {
-                const chunk = line + "\n"
-                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${chunk.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"},"finish_reason":null}]}\n`))
-              }
-              controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
-              controller.enqueue(encoder.encode("data: [DONE]\n"))
-              controller.close()
-            },
-          })
-          return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } })
-        }
+        if (stream) return createSSEResponse(full)
         return new Response(JSON.stringify({ choices: [{ message: { content: full }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
       }
     }
@@ -180,30 +186,7 @@ export async function POST(request: NextRequest) {
 
     if (symbol && CRYPTO_SYMBOLS.has(symbol)) {
       const msg = `## ${symbol} Analysis\n\nI can't fetch live crypto data from this server (Binance blocks cloud IPs). Two options:\n\n1. **Use the chart** — Click the "AI" button on the TradingChart to analyze the chart directly (it sends the data from your browser).\n2. **Try a stock symbol** — Yahoo Finance works from this server (try AAPL, MSFT, TSLA, etc.).\n\n> This is an educational simulation only — not financial advice.`
-
-      if (stream) {
-        const encoder = new TextEncoder()
-        const ss = new ReadableStream({
-          start(controller) {
-            const lines = msg.split(" ")
-            let i = 0
-            function push() {
-              if (i < lines.length) {
-                const chunk = (i === 0 ? "" : " ") + lines[i]
-                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${chunk.replace(/"/g, '\\"')}"},"finish_reason":null}]}\n`))
-                i++
-                setTimeout(push, 20)
-              } else {
-                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
-                controller.enqueue(encoder.encode("data: [DONE]\n"))
-                controller.close()
-              }
-            }
-            push()
-          },
-        })
-        return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } })
-      }
+      if (stream) return createSSEResponse(msg)
       return new Response(JSON.stringify({ choices: [{ message: { content: msg }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
     }
 
@@ -211,57 +194,28 @@ export async function POST(request: NextRequest) {
       const result = await executeTool("get_historical_data", { symbol: symbol ?? "AAPL", interval: "1h", limit: "200" })
       if (result && !result.startsWith("Error")) {
         const parsed = JSON.parse(result)
-        const candlesJson = typeof parsed === "string" ? JSON.parse(parsed) : parsed
-        if (candlesJson.candlesCount && candlesJson.currentPrice) {
-          const analysis = generateFromCandles([{ time: Date.now()/1000, open: candlesJson.open||0, high: candlesJson.high||0, low: candlesJson.low||0, close: candlesJson.currentPrice, volume: candlesJson.volume||0 }], symbol ?? "STOCK", "1h")
+        const cd = typeof parsed === "string" ? JSON.parse(parsed) : parsed
+        if (cd.candlesCount && cd.currentPrice) {
+          const analysis = generateFromCandles(
+            [{ time: Date.now()/1000, open: cd.open||0, high: cd.high||0, low: cd.low||0, close: cd.currentPrice, volume: cd.volume||0 }],
+            symbol ?? "STOCK", "1h"
+          )
           const full = `## Technical Analysis — ${symbol ?? "Stock"}\n\n${analysis}`
-          if (stream) {
-            const encoder = new TextEncoder()
-            const ss = new ReadableStream({
-              start(controller) {
-                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"role":"assistant"},"finish_reason":null}]}\n`))
-                for (const line of full.split("\n")) {
-                  controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${(line+"\n").replace(/"/g, '\\"')}"},"finish_reason":null}]}\n`))
-                }
-                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
-                controller.enqueue(encoder.encode("data: [DONE]\n"))
-                controller.close()
-              },
-            })
-            return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } })
-          }
+          if (stream) return createSSEResponse(full)
           return new Response(JSON.stringify({ choices: [{ message: { content: full }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
         }
       }
     } catch {}
 
     const fallback = `Hello! I'm TradeSim's Built-in AI assistant.\n\nI can help analyze stocks (AAPL, MSFT, TSLA, etc.) using real-time Yahoo Finance data. For crypto chart analysis, use the "AI" button on the chart itself.\n\nTry asking: "Analyze AAPL" or "What's the trend for MSFT?"\n\n> This is an educational simulation only — not financial advice.`
-
-    if (stream) {
-      const encoder = new TextEncoder()
-      const ss = new ReadableStream({
-        start(controller) {
-          const words = fallback.split(" ")
-          let i = 0
-          function push() {
-            if (i < words.length) {
-              controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${(i===0?"":" ")+words[i]}"},"finish_reason":null}]}\n`))
-              i++
-              setTimeout(push, 20)
-            } else {
-              controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
-              controller.enqueue(encoder.encode("data: [DONE]\n"))
-              controller.close()
-            }
-          }
-          push()
-        },
-      })
-      return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } })
-    }
+    if (stream) return createSSEResponse(fallback)
     return new Response(JSON.stringify({ choices: [{ message: { content: fallback }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Internal error"
-    return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { "Content-Type": "application/json" } })
+    const body = JSON.stringify({ error: msg })
+    if (err instanceof SyntaxError && msg.includes("JSON")) {
+      return new Response(JSON.stringify({ error: "Invalid request body", _detail: msg }), { status: 400, headers: { "Content-Type": "application/json" } })
+    }
+    return new Response(body, { status: 500, headers: { "Content-Type": "application/json" } })
   }
 }
