@@ -6,7 +6,6 @@ import { useMarketStore } from "@/stores/marketStore"
 import { streamChat } from "@/lib/ai/chat"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -157,7 +156,7 @@ export function AIChat() {
         </div>
       )}
 
-      <ScrollArea ref={scrollRef} className="flex-1 px-4 py-3">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 min-h-0">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-8">
             <Bot className="h-12 w-12 mb-3 opacity-20" />
@@ -226,7 +225,7 @@ export function AIChat() {
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
 
       <div className="border-t p-3 shrink-0">
         <div className="flex gap-2">
