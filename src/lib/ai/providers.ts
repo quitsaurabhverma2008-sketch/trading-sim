@@ -174,17 +174,28 @@ function ollamaHandler(): ProviderHandler {
   }
 }
 
-function xsmodelHandler(apiKey: string, baseUrl?: string): ProviderHandler {
-  const h = openAIHandler(apiKey)
+function xsmodelHandler(_apiKey: string): ProviderHandler {
   return {
-    ...h,
-    buildRequest: (req) => {
-      const r = h.buildRequest(req)
+    buildRequest: ({ model, messages, systemPrompt, temperature, stream }) => {
+      const msgs = systemPrompt ? [{ role: "system", content: systemPrompt }, ...messages] : messages
       return {
-        ...r,
-        url: `${baseUrl || "http://localhost:8000"}/v1/chat/completions`,
+        url: "/api/ai/xsmodel/chat",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model, messages: msgs, temperature, stream }),
       }
+    },
+    parseResponse: (data: unknown) => {
+      const d = data as { choices: { message: { content: string }; finish_reason: string }[] }
+      return { content: d.choices?.[0]?.message?.content ?? "", finishReason: d.choices?.[0]?.finish_reason }
+    },
+    parseStream: (line: string) => {
+      if (!line.startsWith("data: ")) return null
+      const json = line.slice(6)
+      if (json === "[DONE]") return { content: "", done: true }
+      try {
+        const d = JSON.parse(json) as { choices: { delta: { content?: string }; finish_reason: string | null }[] }
+        return { content: d.choices?.[0]?.delta?.content ?? "", done: d.choices?.[0]?.finish_reason != null }
+      } catch { return null }
     },
   }
 }

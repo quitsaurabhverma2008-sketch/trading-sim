@@ -364,15 +364,15 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   },
   {
     id: "xsmodel",
-    name: "XS Model (Kronos)",
+    name: "Built-in AI (Technical Analysis)",
     models: [
-      { id: "kronos-mini", name: "Kronos Mini (4.1M)", contextWindow: 2048, provider: "xsmodel" },
-      { id: "kronos-small", name: "Kronos Small (24.7M)", contextWindow: 512, provider: "xsmodel" },
-      { id: "kronos-base", name: "Kronos Base (102.3M)", contextWindow: 512, provider: "xsmodel" },
-      { id: "kronos-large", name: "Kronos Large (499.2M)", contextWindow: 512, provider: "xsmodel" },
+      { id: "kronos-mini", name: "TA Mini", contextWindow: 4096, provider: "xsmodel" },
+      { id: "kronos-small", name: "TA Small", contextWindow: 4096, provider: "xsmodel" },
+      { id: "kronos-base", name: "TA Base", contextWindow: 4096, provider: "xsmodel" },
+      { id: "kronos-large", name: "TA Large", contextWindow: 4096, provider: "xsmodel" },
     ],
     apiKeyFormat: "",
-    endpoint: "http://localhost:8000",
+    endpoint: "",
     requiresKey: false,
   },
 ]
