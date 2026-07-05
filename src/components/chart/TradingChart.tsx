@@ -72,48 +72,52 @@ export function TradingChart() {
   }, [])
 
   useEffect(() => {
-    if (!chartRef.current || !mainSeriesRef.current || !volumeSeriesRef.current) return
-    if (candles.length === 0) return
+    try {
+      if (!chartRef.current || !mainSeriesRef.current || !volumeSeriesRef.current) return
+      if (candles.length === 0) return
 
-    chartRef.current.removeSeries(mainSeriesRef.current)
+      chartRef.current.removeSeries(mainSeriesRef.current)
 
-    if (chartStyle === "candle") {
-      mainSeriesRef.current = chartRef.current.addSeries(CandlestickSeries, {
-        upColor: COLORS.candleUp, downColor: COLORS.candleDown,
-        borderUpColor: COLORS.candleUp, borderDownColor: COLORS.candleDown,
-        wickUpColor: COLORS.candleUp, wickDownColor: COLORS.candleDown,
-      })
-      const d: CandlestickData[] = candles.map((c) => ({ time: c.time as Time, open: c.open, high: c.high, low: c.low, close: c.close }))
-      ;(mainSeriesRef.current as ISeriesApi<"Candlestick">).setData(d)
-    } else if (chartStyle === "line") {
-      mainSeriesRef.current = chartRef.current.addSeries(LineSeries, { color: COLORS.sma, lineWidth: 2 })
-      const d: LineData[] = candles.map((c) => ({ time: c.time as Time, value: c.close }))
-      ;(mainSeriesRef.current as ISeriesApi<"Line">).setData(d)
-    } else {
-      mainSeriesRef.current = chartRef.current.addSeries(AreaSeries, { lineColor: COLORS.sma, topColor: COLORS.area, bottomColor: "transparent", lineWidth: 2 })
-      const d: AreaData[] = candles.map((c) => ({ time: c.time as Time, value: c.close }))
-      ;(mainSeriesRef.current as ISeriesApi<"Area">).setData(d)
+      if (chartStyle === "candle") {
+        mainSeriesRef.current = chartRef.current.addSeries(CandlestickSeries, {
+          upColor: COLORS.candleUp, downColor: COLORS.candleDown,
+          borderUpColor: COLORS.candleUp, borderDownColor: COLORS.candleDown,
+          wickUpColor: COLORS.candleUp, wickDownColor: COLORS.candleDown,
+        })
+        const d: CandlestickData[] = candles.map((c) => ({ time: c.time as Time, open: c.open, high: c.high, low: c.low, close: c.close }))
+        ;(mainSeriesRef.current as ISeriesApi<"Candlestick">).setData(d)
+      } else if (chartStyle === "line") {
+        mainSeriesRef.current = chartRef.current.addSeries(LineSeries, { color: COLORS.sma, lineWidth: 2 })
+        const d: LineData[] = candles.map((c) => ({ time: c.time as Time, value: c.close }))
+        ;(mainSeriesRef.current as ISeriesApi<"Line">).setData(d)
+      } else {
+        mainSeriesRef.current = chartRef.current.addSeries(AreaSeries, { lineColor: COLORS.sma, topColor: COLORS.area, bottomColor: "transparent", lineWidth: 2 })
+        const d: AreaData[] = candles.map((c) => ({ time: c.time as Time, value: c.close }))
+        ;(mainSeriesRef.current as ISeriesApi<"Area">).setData(d)
+      }
+
+      volumeSeriesRef.current.setData(candles.map((c) => ({ time: c.time as Time, value: c.volume, color: c.close >= c.open ? COLORS.volUp : COLORS.volDown })))
+
+      if (showSMA && indicators?.sma && smaSeriesRef.current) {
+        const offset = candles.length - indicators.sma.length
+        smaSeriesRef.current.setData(indicators.sma.map((val, i) => ({ time: candles[offset + i]?.time as Time, value: val })))
+      } else { smaSeriesRef.current?.setData([]) }
+
+      if (showEMA && indicators?.ema && emaSeriesRef.current) {
+        const offset = candles.length - indicators.ema.length
+        emaSeriesRef.current.setData(indicators.ema.map((val, i) => ({ time: candles[offset + i]?.time as Time, value: val })))
+      } else { emaSeriesRef.current?.setData([]) }
+
+      if (showBB && indicators?.bb && bbUpperRef.current && bbLowerRef.current) {
+        const len = candles.length
+        bbUpperRef.current.setData([{ time: candles[len - 1]?.time as Time, value: indicators.bb.upper }])
+        bbLowerRef.current.setData([{ time: candles[len - 1]?.time as Time, value: indicators.bb.lower }])
+      } else { bbUpperRef.current?.setData([]); bbLowerRef.current?.setData([]) }
+
+      chartRef.current.timeScale().fitContent()
+    } catch (e) {
+      console.error("Chart data error:", e)
     }
-
-    volumeSeriesRef.current.setData(candles.map((c) => ({ time: c.time as Time, value: c.volume, color: c.close >= c.open ? COLORS.volUp : COLORS.volDown })))
-
-    if (showSMA && indicators?.sma && smaSeriesRef.current) {
-      const offset = candles.length - indicators.sma.length
-      smaSeriesRef.current.setData(indicators.sma.map((val, i) => ({ time: candles[offset + i]?.time as Time, value: val })))
-    } else { smaSeriesRef.current?.setData([]) }
-
-    if (showEMA && indicators?.ema && emaSeriesRef.current) {
-      const offset = candles.length - indicators.ema.length
-      emaSeriesRef.current.setData(indicators.ema.map((val, i) => ({ time: candles[offset + i]?.time as Time, value: val })))
-    } else { emaSeriesRef.current?.setData([]) }
-
-    if (showBB && indicators?.bb && bbUpperRef.current && bbLowerRef.current) {
-      const len = candles.length
-      bbUpperRef.current.setData([{ time: candles[len - 1]?.time as Time, value: indicators.bb.upper }])
-      bbLowerRef.current.setData([{ time: candles[len - 1]?.time as Time, value: indicators.bb.lower }])
-    } else { bbUpperRef.current?.setData([]); bbLowerRef.current?.setData([]) }
-
-    chartRef.current.timeScale().fitContent()
   }, [candles, indicators, chartStyle, showSMA, showEMA, showBB])
 
   return (

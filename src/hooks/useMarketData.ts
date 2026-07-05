@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { useMarketStore } from "@/stores/marketStore"
-import { timeframeToBinanceInterval, fetchKlinesDirect } from "@/lib/market/binance"
+import { timeframeToBinanceInterval, fetchKlinesDirect, createBinanceKlineWS } from "@/lib/market/binance"
 import { calcAllIndicators, type IndicatorResult } from "@/lib/market/indicators"
 import type { Candle, Timeframe, AssetType } from "@/types"
 
@@ -20,13 +20,24 @@ export function useMarketData(
   timeframe: Timeframe,
   limit = 200
 ): MarketDataResult {
-  const { candles: candleMap, setCandles } = useMarketStore()
+  const { candles: candleMap, setCandles, updateLastCandle } = useMarketStore()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [indicators, setIndicators] = useState<IndicatorResult | null>(null)
 
   const candleKey = `${symbol}:${timeframe}`
   const candles = candleMap[candleKey] ?? []
+  const wsRef = useRef<WebSocket | null>(null)
+
+  useEffect(() => {
+    if (!symbol || type !== "crypto") return
+    const interval = timeframeToBinanceInterval(timeframe)
+    const ws = createBinanceKlineWS(symbol, interval, (candle) => {
+      updateLastCandle(symbol, candle, timeframe)
+    })
+    wsRef.current = ws
+    return () => { ws.close(); wsRef.current = null }
+  }, [symbol, type, timeframe])
 
   const fetchData = useCallback(async () => {
     if (!symbol) return
@@ -39,16 +50,7 @@ export function useMarketData(
 
       if (type === "crypto") {
         const interval = timeframeToBinanceInterval(timeframe)
-        try {
-          const res = await fetch(
-            `/api/market/crypto/${symbol}?type=klines&interval=${interval}&limit=${limit}`
-          )
-          if (!res.ok) throw new Error(`API error: ${res.status}`)
-          const json = await res.json()
-          data = json.candles ?? []
-        } catch {
-          data = await fetchKlinesDirect(symbol, interval, limit)
-        }
+        data = await fetchKlinesDirect(symbol, interval, limit)
       } else {
         const range = getRangeFromTimeframe(timeframe)
         const interval = getIntervalFromTimeframe(timeframe)
