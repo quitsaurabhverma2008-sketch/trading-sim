@@ -32,7 +32,7 @@ export function AIChat() {
   async function handleSend() {
     const text = input.trim()
     if (!text || isStreaming) return
-    if (!providerState.apiKey && providerState.provider !== "ollama") {
+    if (!providerState.apiKey && providerState.provider !== "ollama" && providerState.provider !== "xsmodel") {
       toast.error("Set your API key in AI settings first")
       return
     }

@@ -23,7 +23,7 @@ export function AISettings() {
   const models = provider?.models ?? []
 
   async function testConnection() {
-    if (!providerState.apiKey && providerState.provider !== "ollama") {
+    if (!providerState.apiKey && providerState.provider !== "ollama" && providerState.provider !== "xsmodel") {
       toast.error("Enter an API key first")
       return
     }
