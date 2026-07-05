@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { useMarketStore } from "@/stores/marketStore"
-import { timeframeToBinanceInterval } from "@/lib/market/binance"
+import { timeframeToBinanceInterval, fetchKlinesDirect } from "@/lib/market/binance"
 import { calcAllIndicators, type IndicatorResult } from "@/lib/market/indicators"
 import type { Candle, Timeframe, AssetType } from "@/types"
 
@@ -39,14 +39,16 @@ export function useMarketData(
 
       if (type === "crypto") {
         const interval = timeframeToBinanceInterval(timeframe)
-        const res = await fetch(
-          `/api/market/crypto/${symbol}?type=klines&interval=${interval}&limit=${limit}`
-        )
-
-        if (!res.ok) throw new Error(`API error: ${res.status}`)
-
-        const json = await res.json()
-        data = json.candles ?? []
+        try {
+          const res = await fetch(
+            `/api/market/crypto/${symbol}?type=klines&interval=${interval}&limit=${limit}`
+          )
+          if (!res.ok) throw new Error(`API error: ${res.status}`)
+          const json = await res.json()
+          data = json.candles ?? []
+        } catch {
+          data = await fetchKlinesDirect(symbol, interval, limit)
+        }
       } else {
         const range = getRangeFromTimeframe(timeframe)
         const interval = getIntervalFromTimeframe(timeframe)

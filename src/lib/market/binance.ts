@@ -203,6 +203,31 @@ export function createBinanceKlineWS(
   return ws
 }
 
+export async function fetchKlinesDirect(
+  symbol: string,
+  interval: string,
+  limit = 200
+): Promise<Candle[]> {
+  const url = `${BINANCE_REST_BASE}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 10000)
+  try {
+    const res = await fetch(url, { signal: controller.signal })
+    if (!res.ok) throw new Error(`Binance API error: ${res.status}`)
+    const data: unknown[][] = await res.json()
+    return data.map((k) => ({
+      time: Math.floor((k[0] as number) / 1000),
+      open: parseFloat(k[1] as string),
+      high: parseFloat(k[2] as string),
+      low: parseFloat(k[3] as string),
+      close: parseFloat(k[4] as string),
+      volume: parseFloat(k[5] as string),
+    }))
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 export function parseBinanceTicker(data: {
   stream: string
   data: {
