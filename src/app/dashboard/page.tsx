@@ -9,7 +9,6 @@ import { TradeHistory } from "@/components/trading/TradeHistory"
 import { PortfolioSummary } from "@/components/portfolio/PortfolioSummary"
 import { HoldingsTable } from "@/components/portfolio/HoldingsTable"
 import { PerformanceMetrics } from "@/components/portfolio/PerformanceMetrics"
-import { AIChat } from "@/components/ai/AIChat"
 import { SymbolSearch } from "@/components/market/SymbolSearch"
 import { OrderBook } from "@/components/chart/OrderBook"
 import { PnLCalculator } from "@/components/trading/PnLCalculator"
@@ -18,6 +17,7 @@ import { TIMEFRAMES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import { Brain, Activity, BookOpen, Calculator } from "lucide-react"
 import { useState } from "react"
+import Link from "next/link"
 
 const TOP_CRYPTO = [
   "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT",
@@ -26,7 +26,7 @@ const TOP_CRYPTO = [
 
 export default function DashboardPage() {
   const { activeTimeframe, setActiveTimeframe, connectionStatus } = useMarketStore()
-  const { toggleAIPanel, toggleOrderPanel, aiPanelOpen } = useUIStore()
+  const { toggleOrderPanel } = useUIStore()
   const [showOrderBook, setShowOrderBook] = useState(false)
   const [showPnLCalc, setShowPnLCalc] = useState(false)
 
@@ -66,15 +66,12 @@ export default function DashboardPage() {
             <Activity className="h-3 w-3" />
             <span className="hidden sm:inline">Trade</span>
           </Button>
-          <Button
-            variant={aiPanelOpen ? "default" : "outline"}
-            size="xs"
-            className="text-xs gap-1 h-7"
-            onClick={toggleAIPanel}
-          >
-            <Brain className="h-3 w-3" />
-            <span className="hidden sm:inline">AI</span>
-          </Button>
+          <Link href="/dashboard/ai">
+            <Button variant="outline" size="xs" className="text-xs gap-1 h-7">
+              <Brain className="h-3 w-3" />
+              <span className="hidden sm:inline">AI</span>
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -88,12 +85,6 @@ export default function DashboardPage() {
             <TradeHistory />
           </div>
         </div>
-
-        {aiPanelOpen && (
-          <div className="w-full lg:w-96 shrink-0 border-t lg:border-t-0 lg:border-l flex flex-col overflow-hidden max-h-[50vh] lg:max-h-none">
-            <AIChat />
-          </div>
-        )}
 
         <div className="w-full lg:w-80 shrink-0 border-t lg:border-t-0 lg:border-l flex flex-col overflow-hidden max-h-[40vh] lg:max-h-none">
           <div className="p-2 sm:p-3 space-y-2 sm:space-y-3 overflow-y-auto">
