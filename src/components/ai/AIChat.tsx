@@ -58,6 +58,18 @@ export function AIChat() {
 
     let fullResponse = ""
 
+    const contextSymbol = text.toLowerCase().includes("btc") ? "BTCUSDT"
+      : text.toLowerCase().includes("eth") ? "ETHUSDT"
+      : text.toLowerCase().includes("sol") ? "SOLUSDT"
+      : text.toLowerCase().includes("xrp") ? "XRPUSDT"
+      : text.toLowerCase().includes("ada") ? "ADAUSDT"
+      : text.toLowerCase().includes("doge") ? "DOGEUSDT"
+      : text.toLowerCase().includes("bnb") ? "BNBUSDT"
+      : text.toLowerCase().includes("avax") ? "AVAXUSDT"
+      : text.toLowerCase().includes("dot") ? "DOTUSDT"
+      : text.toLowerCase().includes("link") ? "LINKUSDT"
+      : activeSymbol
+
     await streamChat(
       providerState.provider,
       providerState.apiKey,
@@ -96,7 +108,8 @@ export function AIChat() {
           toast.error(error)
         },
       },
-      providerState.systemPrompt || undefined
+      providerState.systemPrompt || undefined,
+      contextSymbol
     )
   }
 
