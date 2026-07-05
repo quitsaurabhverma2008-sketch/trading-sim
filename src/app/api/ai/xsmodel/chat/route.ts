@@ -2,241 +2,197 @@ import { NextRequest } from "next/server"
 import { executeTool } from "@/lib/ai/tools"
 import { fetchKlinesDirect } from "@/lib/market/binance"
 import { calcAllIndicators, findSupportResistance } from "@/lib/market/indicators"
+import type { Candle } from "@/types"
 
-const SYMBOL_RE = /\b([A-Z]{2,5})\b/g
 const CRYPTO_SYMBOLS = new Set([
   "BTC", "ETH", "SOL", "BNB", "XRP", "ADA", "DOGE", "AVAX", "DOT", "LINK",
   "MATIC", "ATOM", "UNI", "ARB", "OP", "NEAR", "APT", "LTC", "BCH", "FIL",
   "AAVE", "ALGO", "AXS", "SAND", "MANA", "GALA", "FTM", "CRV", "EOS", "TRX",
 ])
 
-const SAMPLE_RESPONSES: Record<string, string> = {
-  trend: `## Trend Analysis
+function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)] }
 
-The current trend shows {trend} across the analyzed timeframe. Price is currently at ${"${"}price} with the 20-period SMA at ${"${"}sma20} and EMA at ${"${"}ema20}.
-
-**Key Observations:**
-- SMA/EMA cross: {smaEmaSignal}
-- Price action relative to moving averages: {priceVsMA}
-- Volume analysis: Volume is at ${"${"}volume} vs SMA of ${"${"}volSma}, suggesting {volumeSignal}
-
-**Confidence:** {confidence}`,
-
-  rsi: `## RSI Analysis
-
-The Relative Strength Index (RSI) is currently at ${"${"}rsi}.
-
-- RSI > 70: Overbought territory — potential reversal or pullback
-- RSI < 30: Oversold territory — potential bounce or recovery
-- RSI 30-70: Neutral zone — no extreme signals
-
-**Signal:** {rsiSignal}
-**Confidence:** {confidence}`,
-
-  macd: `## MACD Analysis
-
-**MACD Line:** ${"${"}macd}
-**Signal Line:** ${"${"}macdSignal}
-**Histogram:** ${"${"}macdHistogram}
-
-{MACDCross}
-
-**Confidence:** {confidence}`,
-
-  bb: `## Bollinger Bands Analysis
-
-**Upper Band:** ${"${"}bbUpper}
-**Middle Band (SMA):** ${"${"}bbMiddle}
-**Lower Band:** ${"${"}bbLower}
-
-{bbSignal}
-
-**Confidence:** {confidence}`,
-
-  summary: `## Summary & Outlook
-
-Based on the technical analysis of ${"${"}symbol} on the ${"${"}interval} timeframe:
-
-**Overall Trend:** {trend}
-**Key Levels:** Support at ${"${"}support}, Resistance at ${"${"}resistance}
-**RSI:** ${"${"}rsi} ({rsiSignal})
-**MACD:** {MACDSummary}
-
-**Trading View:** {outlook}
-
-> This is an educational simulation only — not financial advice.`,
+function num(n: string | number | undefined, d = 0): number {
+  const v = typeof n === "string" ? parseFloat(n) : (n ?? 0)
+  return isNaN(v) ? 0 : Math.round(v * 10 ** d) / 10 ** d
 }
 
-function formatTemplate(tpl: string, vars: Record<string, string>): string {
-  return tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? k)
+interface ChartDataPayload {
+  symbol?: string
+  timeframe?: string
+  candles?: { t: number; o: number; h: number; l: number; c: number; v: number }[]
+  rsi?: string
+  macd?: { macd: string; signal: string; hist: string } | null
+  sma?: string[] | null
+  ema?: string[] | null
+  bb?: { upper: string; lower: string } | null
 }
 
-function generateAnalysis(data: Record<string, string>, symbol: string): string[] {
-  const price = parseFloat(data.price || "0")
-  const sma20 = parseFloat(data.sma20 || "0")
-  const ema20 = parseFloat(data.ema20 || "0")
-  const rsiVal = parseFloat(data.rsi || "50")
-  const macd = parseFloat(data.macd || "0")
-  const macdSig = parseFloat(data.macdSignal || "0")
-  const macdHist = parseFloat(data.macdHistogram || "0")
-
-  let trend = "sideways"
-  if (price > sma20 && price > ema20) trend = "uptrend"
-  else if (price < sma20 && price < ema20) trend = "downtrend"
-
-  const smaEmaSignal = sma20 > ema20 ? "SMA above EMA — bullish alignment" : "SMA below EMA — bearish alignment"
-  const priceVsMA = price > sma20 && price > ema20 ? "Price trading above both MAs — bullish" : price < sma20 && price < ema20 ? "Price trading below both MAs — bearish" : "Price mixed relative to MAs"
-  const vol = parseFloat(data.volume || "0")
-  const volSma = parseFloat(data.volSma || "1")
-  const volumeSignal = vol > volSma * 1.5 ? "above average volume, confirming conviction" : vol < volSma * 0.5 ? "below average volume, weak participation" : "normal volume levels"
-
-  const rsiSignal = rsiVal > 70 ? "Overbought — caution for longs" : rsiVal < 30 ? "Oversold — watch for bounce" : "Neutral"
-  const rsiConfidence = rsiVal > 80 || rsiVal < 20 ? "High" : rsiVal > 70 || rsiVal < 30 ? "Medium" : "Low"
-
-  const macdCross = macd > macdSig ? "MACD above signal line — bullish momentum" : macd < macdSig ? "MACD below signal line — bearish momentum" : "MACD crossing signal line — watch for trend change"
-  const MACDSummary = macd > macdSig ? "Bullish (MACD above signal)" : "Bearish (MACD below signal)"
-
-  const bbUpper = parseFloat(data.bbUpper || "0")
-  const bbLower = parseFloat(data.bbLower || "0")
-  const bbMiddle = (bbUpper + bbLower) / 2
-  let bbSignal = "Price within bands — normal conditions"
-  if (price >= bbUpper) bbSignal = "Price touching upper band — overextended"
-  else if (price <= bbLower) bbSignal = "Price touching lower band — potential bounce zone"
-
-  let outlook: string
-  const bullSignals = (trend === "uptrend" ? 1 : 0) + (rsiVal > 50 && rsiVal < 70 ? 1 : 0) + (macd > macdSig ? 1 : 0) + (price >= bbMiddle ? 1 : 0)
-  if (bullSignals >= 3) outlook = "Bullish bias — multiple indicators align positively"
-  else if (bullSignals <= 1) outlook = "Bearish bias — multiple indicators suggest weakness"
-  else outlook = "Neutral — mixed signals, wait for confirmation"
-
-  const vars: Record<string, string> = {
-    symbol, price: price.toFixed(2),
-    sma20: sma20.toFixed(2), ema20: ema20.toFixed(2),
-    rsi: rsiVal.toFixed(1), rsiSignal,
-    macd: macd.toFixed(4), macdSignal: macdSig.toFixed(4), macdHistogram: macdHist.toFixed(4),
-    bbUpper: bbUpper.toFixed(2), bbMiddle: bbMiddle.toFixed(2), bbLower: bbLower.toFixed(2),
-    volume: vol.toFixed(2), volSma: volSma.toFixed(2),
-    support: data.support || "N/A", resistance: data.resistance || "N/A",
-    interval: data.interval || "1h",
-    trend, smaEmaSignal, priceVsMA, volumeSignal,
-    MACDCross: macdCross, MACDSummary,
-    bbSignal, outlook,
-    confidence: rsiConfidence,
-  }
-
-  return [
-    formatTemplate(SAMPLE_RESPONSES.trend, vars),
-    "",
-    formatTemplate(SAMPLE_RESPONSES.rsi, vars),
-    "",
-    formatTemplate(SAMPLE_RESPONSES.macd, vars),
-    "",
-    formatTemplate(SAMPLE_RESPONSES.bb, vars),
-    "",
-    formatTemplate(SAMPLE_RESPONSES.summary, vars),
-  ]
-}
-
-async function fetchCryptoDataDirect(symbol: string): Promise<Record<string, string> | null> {
+function extractChartData(content: string): ChartDataPayload | null {
   try {
-    const candles = await fetchKlinesDirect(`${symbol}USDT`, "1h", 200)
-    if (!candles || candles.length === 0) return null
-    const indicators = calcAllIndicators(candles)
-    const sr = findSupportResistance(candles)
-    const latest = candles[candles.length - 1]
-    const macd = indicators.macd
-    const bb = indicators.bb
-
-    return {
-      symbol: `${symbol}USDT`,
-      price: latest.close.toString(),
-      interval: "1h",
-      trend: latest.close > (indicators.sma?.[indicators.sma.length - 1] ?? 0) ? "uptrend" : "downtrend",
-      sma20: (indicators.sma?.[indicators.sma.length - 1] ?? 0).toString(),
-      ema20: (indicators.ema?.[indicators.ema.length - 1] ?? 0).toString(),
-      rsi: (indicators.rsi?.value ?? 50).toString(),
-      macd: (macd?.macd ?? 0).toString(),
-      macdSignal: (macd?.signal ?? 0).toString(),
-      macdHistogram: (macd?.histogram ?? 0).toString(),
-      bbUpper: (bb?.upper ?? 0).toString(),
-      bbLower: (bb?.lower ?? 0).toString(),
-      volume: latest.volume.toString(),
-      volSma: (indicators.volumeSMA ?? 0).toString(),
-      support: sr.support.toString(),
-      resistance: sr.resistance.toString(),
-    }
-  } catch {
+    const match = content.match(/\{[\s\S]*"candles"[\s\S]*\}/)
+    if (!match) return null
+    const parsed = JSON.parse(match[0]) as ChartDataPayload
+    if (parsed.candles && Array.isArray(parsed.candles) && parsed.candles.length > 0) return parsed
     return null
-  }
+  } catch { return null }
 }
 
-function extractSymbols(text: string): string[] {
-  const found = new Set<string>()
-  for (const m of text.matchAll(SYMBOL_RE)) {
-    const s = m[1]
-    if (CRYPTO_SYMBOLS.has(s)) found.add(s)
-    if (["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","BRK","JPM","V","JNJ","WMT"].includes(s)) found.add(s)
-  }
-  return [...found]
+function candlesFromPayload(p: ChartDataPayload): Candle[] | null {
+  if (!p.candles || p.candles.length < 10) return null
+  return p.candles.map(c => ({
+    time: c.t,
+    open: c.o,
+    high: c.h,
+    low: c.l,
+    close: c.c,
+    volume: c.v,
+  }))
 }
 
-function nonStreamingResponse(data: Record<string, string>, symbol: string): string {
-  return generateAnalysis(data, symbol).join("\n")
+function extractSymbol(text: string): string | null {
+  const m = text.match(/\b([A-Z]{2,5})\b/g)
+  if (!m) return null
+  for (const s of m) {
+    if (CRYPTO_SYMBOLS.has(s)) return s
+    if (["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","BRK","JPM","V","JNJ","WMT","COIN","HOOD","SPY","QQQ"].includes(s)) return s
+  }
+  return m[0] ?? null
+}
+
+function generateFromCandles(candles: Candle[], symbol: string, timeframe: string): string {
+  const indicators = calcAllIndicators(candles)
+  const sr = findSupportResistance(candles)
+  const last = candles[candles.length - 1]
+  const prev = candles.length > 1 ? candles[candles.length - 2] : last
+  const change = ((last.close - prev.close) / prev.close * 100).toFixed(2)
+
+  const sma20 = indicators.sma?.[indicators.sma.length - 1] ?? last.close
+  const ema20 = indicators.ema?.[indicators.ema.length - 1] ?? last.close
+  const rsi = indicators.rsi?.value ?? 50
+  const rsiSig = rsi > 70 ? "overbought" : rsi < 30 ? "oversold" : "neutral"
+  const macd = indicators.macd
+  const bb = indicators.bb
+
+  let trend: string
+  if (last.close > sma20 && last.close > ema20) trend = "uptrend"
+  else if (last.close < sma20 && last.close < ema20) trend = "downtrend"
+  else trend = "sideways"
+
+  const vol = last.volume
+  const volSma = indicators.volumeSMA ?? vol
+  const volRatio = volSma > 0 ? (vol / volSma) : 1
+
+  const macdSignal = macd ? (macd.macd > macd.signal ? "bullish" : "bearish") : "neutral"
+  const bbPos = bb ? ((last.close - bb.lower) / (bb.upper - bb.lower)) : 0.5
+
+  const descriptions: Record<string, string[]> = {
+    trends: ["The market is currently in a {trend} on the {tf} chart.", "Price action suggests a {trend} across the {tf} timeframe.", "Looking at the {tf} chart, we can see a clear {trend}."],
+    price: ["Trading at ${price} with a {change}% move in the last candle.", "Current price stands at ${price}, showing a {change}% change from the previous candle.", "Price is at ${price}, moving {change}% since the last period."],
+    ma: ["The 20-period SMA at ${sma} and EMA at ${ema} confirm the {direction} bias.", "Moving averages show SMA (${sma}) and EMA (${ema}) — this suggests a {direction} outlook.", "Key moving averages (SMA: ${sma}, EMA: ${ema}) are aligned {direction}."],
+    rsi: ["RSI at ${rsi} indicates ${signal} conditions.", "The Relative Strength Index reads ${rsi}, placing the asset in ${signal} territory.", "With RSI at ${rsi}, we're seeing ${signal} momentum."],
+    macd: ["MACD shows ${signal} momentum with the histogram at ${hist}.", "The MACD indicator is ${signal} — histogram value is ${hist}.", "Momentum as measured by MACD is ${signal} (histogram: ${hist})."],
+    vol: ["Volume at ${vol} is ${ratio} times the SMA — suggesting ${verdict} participation.", "Trading volume of ${vol} is ${ratio}x the average, indicating ${verdict} interest.", "Volume analysis: ${vol} vs SMA of ${vsma} (${ratio}x) — ${verdict}."],
+    bb: ["Bollinger Bands show price at ${pos}% of the band range, indicating ${signal}.", "Price is positioned at ${pos}% within the Bollinger Bands — ${signal}.", "BB analysis: price at ${pos}% of band width — ${signal}."],
+    support: ["Support is identified at ${sup}, with resistance at ${res}.", "Key levels: support ${sup}, resistance ${res}.", "Watch for support at ${sup} and resistance at ${res}."],
+    outlook_s: [
+      "Overall, the technical picture suggests a {outlook} outlook. However, always wait for confirmation before making any decisions.",
+      "The technical alignment points toward a {outlook} bias. Exercise caution and manage risk accordingly.",
+      "Based on the indicators, the weight of evidence favors a {outlook} scenario in the near term.",
+    ],
+  }
+
+  let trendWord: string
+  let direction: string
+  if (trend === "uptrend") { trendWord = "strong uptrend"; direction = "bullishly" }
+  else if (trend === "downtrend") { trendWord = "downtrend"; direction = "bearishly" }
+  else { trendWord = "sideways consolidation"; direction = "neutrally" }
+
+  const volVerdict = volRatio > 1.3 ? "strong" : volRatio < 0.7 ? "weak" : "normal"
+  const bbSignal = bbPos < 0.2 ? "approaching oversold levels" : bbPos > 0.8 ? "approaching overbought levels" : "within normal range"
+  const macdWord = macdSignal === "bullish" ? "bullish" : "bearish"
+
+  let bullScore = 0
+  if (trend === "uptrend") bullScore++
+  if (rsi > 50) bullScore++
+  if (macdSignal === "bullish") bullScore++
+  if (bbPos > 0.5) bullScore++
+
+  const outlook = bullScore >= 3 ? "bullish" : bullScore <= 1 ? "bearish" : "neutral"
+
+  const template = [
+    pick(descriptions.trends).replace("{trend}", trendWord),
+    pick(descriptions.price).replace("{price}", last.close.toFixed(2)).replace("{change}", change),
+    pick(descriptions.ma).replace("{sma}", sma20.toFixed(2)).replace("{ema}", ema20.toFixed(2)).replace("{direction}", direction),
+    pick(descriptions.rsi).replace("{rsi}", rsi.toFixed(1)).replace("{signal}", rsiSig),
+    pick(descriptions.macd).replace("{signal}", macdWord).replace("{hist}", (macd?.histogram ?? 0).toFixed(4)),
+    pick(descriptions.bb).replace("{pos}", (bbPos * 100).toFixed(0)).replace("{signal}", bbSignal),
+    pick(descriptions.vol).replace("{vol}", vol.toFixed(1)).replace("{vsma}", (volSma).toFixed(1)).replace("{ratio}", volRatio.toFixed(2)).replace("{verdict}", volVerdict),
+    pick(descriptions.support).replace("{sup}", sr.support.toString()).replace("{res}", sr.resistance.toString()),
+    pick(descriptions.outlook_s).replace("{outlook}", outlook),
+    "",
+    `> This is an educational simulation only — not financial advice.`,
+  ]
+
+  return template.join("\n\n")
 }
 
 export async function POST(request: NextRequest) {
   try {
     const { model, messages, temperature, stream } = await request.json()
-
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: "messages array required" }), { status: 400, headers: { "Content-Type": "application/json" } })
     }
 
     const lastMsg = messages.filter((m: { role: string }) => m.role === "user").pop()?.content ?? ""
-    const symbols = extractSymbols(lastMsg)
-    const symbol = symbols[0] || "BTC"
+    const chartPayload = extractChartData(lastMsg)
 
-    let data: Record<string, string> | null = null
+    if (chartPayload) {
+      const candles = candlesFromPayload(chartPayload)
+      if (candles) {
+        const sym = chartPayload.symbol ?? extractSymbol(lastMsg) ?? "Unknown"
+        const tf = chartPayload.timeframe ?? "1h"
+        const analysis = generateFromCandles(candles, sym, tf)
+        const full = `## AI Chart Analysis — ${sym}\n\n${analysis}`
 
-    if (CRYPTO_SYMBOLS.has(symbol)) {
-      data = await fetchCryptoDataDirect(symbol)
-    } else {
-      try {
-        const result = await executeTool("get_realtime_quote", { symbol: `${symbol}USDT` })
-        if (result && !result.startsWith("Error")) {
-          const parsed = JSON.parse(result) as Record<string, string | number>
-          data = {}
-          for (const [k, v] of Object.entries(parsed)) data[k] = String(v)
-          if (data) data.interval = "1h"
+        if (stream) {
+          const encoder = new TextEncoder()
+          const ss = new ReadableStream({
+            start(controller) {
+              controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"role":"assistant"},"finish_reason":null}]}\n`))
+              const lines = full.split("\n")
+              for (const line of lines) {
+                const chunk = line + "\n"
+                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${chunk.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"},"finish_reason":null}]}\n`))
+              }
+              controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
+              controller.enqueue(encoder.encode("data: [DONE]\n"))
+              controller.close()
+            },
+          })
+          return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } })
         }
-      } catch {}
-      if (!data) {
-        try {
-          const result = await executeTool("get_historical_data", { symbol, interval: "1h", limit: "200" })
-          if (result && !result.startsWith("Error")) {
-            const parsed = JSON.parse(result) as Record<string, string | number>
-            data = {}
-            for (const [k, v] of Object.entries(parsed)) data[k] = String(v)
-          }
-        } catch {}
+        return new Response(JSON.stringify({ choices: [{ message: { content: full }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
       }
     }
 
-    if (!data) {
-      const fallback = `I'm sorry, I couldn't fetch live market data for ${symbol} right now. This might be due to API limitations on the free tier. Please try again later or check a different symbol.\n\n> This is an educational simulation only — not financial advice.`
+    const symbol = extractSymbol(lastMsg)
+
+    if (symbol && CRYPTO_SYMBOLS.has(symbol)) {
+      const msg = `## ${symbol} Analysis\n\nI can't fetch live crypto data from this server (Binance blocks cloud IPs). Two options:\n\n1. **Use the chart** — Click the "AI" button on the TradingChart to analyze the chart directly (it sends the data from your browser).\n2. **Try a stock symbol** — Yahoo Finance works from this server (try AAPL, MSFT, TSLA, etc.).\n\n> This is an educational simulation only — not financial advice.`
 
       if (stream) {
         const encoder = new TextEncoder()
         const ss = new ReadableStream({
           start(controller) {
-            const words = fallback.split(" ")
+            const lines = msg.split(" ")
             let i = 0
             function push() {
-              if (i < words.length) {
-                const chunk = (i === 0 ? "" : " ") + words[i]
-                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${chunk}"},"finish_reason":null}]}\n`))
+              if (i < lines.length) {
+                const chunk = (i === 0 ? "" : " ") + lines[i]
+                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${chunk.replace(/"/g, '\\"')}"},"finish_reason":null}]}\n`))
                 i++
-                setTimeout(push, 30)
+                setTimeout(push, 20)
               } else {
                 controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
                 controller.enqueue(encoder.encode("data: [DONE]\n"))
@@ -248,34 +204,62 @@ export async function POST(request: NextRequest) {
         })
         return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } })
       }
-
-      return new Response(JSON.stringify({ choices: [{ message: { content: fallback }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
+      return new Response(JSON.stringify({ choices: [{ message: { content: msg }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
     }
 
-    const analysis = nonStreamingResponse(data, symbol)
+    try {
+      const result = await executeTool("get_historical_data", { symbol: symbol ?? "AAPL", interval: "1h", limit: "200" })
+      if (result && !result.startsWith("Error")) {
+        const parsed = JSON.parse(result)
+        const candlesJson = typeof parsed === "string" ? JSON.parse(parsed) : parsed
+        if (candlesJson.candlesCount && candlesJson.currentPrice) {
+          const analysis = generateFromCandles([{ time: Date.now()/1000, open: candlesJson.open||0, high: candlesJson.high||0, low: candlesJson.low||0, close: candlesJson.currentPrice, volume: candlesJson.volume||0 }], symbol ?? "STOCK", "1h")
+          const full = `## Technical Analysis — ${symbol ?? "Stock"}\n\n${analysis}`
+          if (stream) {
+            const encoder = new TextEncoder()
+            const ss = new ReadableStream({
+              start(controller) {
+                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"role":"assistant"},"finish_reason":null}]}\n`))
+                for (const line of full.split("\n")) {
+                  controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${(line+"\n").replace(/"/g, '\\"')}"},"finish_reason":null}]}\n`))
+                }
+                controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
+                controller.enqueue(encoder.encode("data: [DONE]\n"))
+                controller.close()
+              },
+            })
+            return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } })
+          }
+          return new Response(JSON.stringify({ choices: [{ message: { content: full }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
+        }
+      }
+    } catch {}
 
-    const preamble = `# Technical Analysis for ${symbol}\n\n`
-    const fullResponse = preamble + analysis + `\n\n*Analysis generated by TradeSim Built-in AI using real-time market data.*`
+    const fallback = `Hello! I'm TradeSim's Built-in AI assistant.\n\nI can help analyze stocks (AAPL, MSFT, TSLA, etc.) using real-time Yahoo Finance data. For crypto chart analysis, use the "AI" button on the chart itself.\n\nTry asking: "Analyze AAPL" or "What's the trend for MSFT?"\n\n> This is an educational simulation only — not financial advice.`
 
     if (stream) {
       const encoder = new TextEncoder()
       const ss = new ReadableStream({
         start(controller) {
-          controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"role":"assistant"},"finish_reason":null}]}\n`))
-          const lines = fullResponse.split("\n")
-          for (const line of lines) {
-            const chunk = line + "\n"
-            controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${chunk.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"},"finish_reason":null}]}\n`))
+          const words = fallback.split(" ")
+          let i = 0
+          function push() {
+            if (i < words.length) {
+              controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{"content":"${(i===0?"":" ")+words[i]}"},"finish_reason":null}]}\n`))
+              i++
+              setTimeout(push, 20)
+            } else {
+              controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
+              controller.enqueue(encoder.encode("data: [DONE]\n"))
+              controller.close()
+            }
           }
-          controller.enqueue(encoder.encode(`data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n`))
-          controller.enqueue(encoder.encode("data: [DONE]\n"))
-          controller.close()
+          push()
         },
       })
       return new Response(ss, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } })
     }
-
-    return new Response(JSON.stringify({ choices: [{ message: { content: fullResponse }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
+    return new Response(JSON.stringify({ choices: [{ message: { content: fallback }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Internal error"
     return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { "Content-Type": "application/json" } })
