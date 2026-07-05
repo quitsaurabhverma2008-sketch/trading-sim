@@ -27,7 +27,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json({ error: "Invalid type" }, { status: 400 })
     }
   } catch (error) {
-    console.error("Crypto API error:", error)
-    return NextResponse.json({ error: "Failed to fetch market data" }, { status: 500 })
+    const msg = error instanceof Error ? error.message : "Failed to fetch market data"
+    console.error("Crypto API error:", msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }

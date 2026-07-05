@@ -17,16 +17,28 @@ export function timeframeToBinanceInterval(tf: Timeframe): string {
   return map[tf] ?? "1h"
 }
 
+async function fetchWithTimeout(url: string, timeoutMs = 8000, init?: RequestInit): Promise<Response> {
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(url, { ...init, signal: controller.signal })
+    return res
+  } finally {
+    clearTimeout(id)
+  }
+}
+
 export async function fetchKlines(
   symbol: string,
   interval: string,
   limit = 500
 ): Promise<Candle[]> {
   const url = `${BINANCE_REST_BASE}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
-  const res = await fetch(url, { next: { revalidate: 60 } })
+  const res = await fetchWithTimeout(url)
 
   if (!res.ok) {
-    throw new Error(`Binance API error: ${res.status} ${res.statusText}`)
+    const body = await res.text().catch(() => "")
+    throw new Error(`Binance API error: ${res.status} ${res.statusText} — ${body}`)
   }
 
   const data: unknown[][] = await res.json()
@@ -102,7 +114,8 @@ export async function fetchExchangeInfo(): Promise<{ symbol: string; baseAsset: 
 
 export async function fetchOrderBook(symbol: string, limit = 20): Promise<OrderBook> {
   const url = `${BINANCE_REST_BASE}/api/v3/depth?symbol=${symbol}&limit=${limit}`
-  const res = await fetch(url)
+  const res = await fetchWithTimeout(url)
+  if (!res.ok) throw new Error(`Binance depth error: ${res.status}`)
   const data = await res.json()
 
   return {
