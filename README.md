@@ -42,7 +42,7 @@
 
 | Provider | Key Required | Models |
 |---|---|---|
-| **Built-in AI** (TA) | ❌ Free | Technical Analysis (chart-aware) |
+| **Built-in AI** (TA) | ❌ Free | Technical Analysis (chart-aware, Perplexity-style system prompt) |
 | **OpenAI** | ✅ | GPT-4o, GPT-4o-mini, o3, o4-mini |
 | **Anthropic** | ✅ | Claude 3.5/4 Sonnet, Haiku |
 | **Google** | ✅ | Gemini 2.0/2.5 Flash, Pro |
@@ -54,6 +54,8 @@
 ![AI Chat](https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop)
 
 **Built-in AI** — click the **AI** button on any chart to get instant technical analysis (RSI, MACD, trend, support/resistance) based on live chart data. No setup required.
+
+The AI system prompt is inspired by Perplexity's leaked computer-use prompt — adapted for financial analysis with `<identity>`, `<analysis_plan>`, `<output_style>`, `<formatting>`, `<citation_instructions>`, and `<mandatory>` disclaimer sections. See `src/lib/constants.ts:402`.
 
 ### 📈 Screeners
 
@@ -136,7 +138,7 @@ src/
 ```
 Browser ─► Binance (CORS) ──► Crypto prices, klines, WebSocket
          ─► Vercel API ──────► Yahoo Finance ──► Stock data
-         ─► /api/ai/xsmodel ─► Built-in AI analysis (indicators)
+         ─► /api/ai/xsmodel/chat ─► Built-in AI analysis (indicators, SSE streaming)
 ```
 
 ---
