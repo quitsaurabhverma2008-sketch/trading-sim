@@ -6,6 +6,23 @@ import { timeframeToBinanceInterval, fetchKlinesDirect, createBinanceKlineWS } f
 import { calcAllIndicators, type IndicatorResult } from "@/lib/market/indicators"
 import type { Candle, Timeframe, AssetType } from "@/types"
 
+const KNOWN_CRYPTO = new Set([
+  "BTC","ETH","SOL","BNB","XRP","ADA","DOGE","AVAX","DOT","LINK",
+  "MATIC","ATOM","UNI","ARB","OP","NEAR","APT","LTC","BCH","FIL",
+  "AAVE","ALGO","AXS","SAND","MANA","GALA","FTM","CRV","EOS","TRX",
+  "ICP","FET","RUNE","INJ","TIA","SEI","STRK","PEPE","WIF","BONK",
+  "FLOKI","SHIB","NOT","ENA","W","TAO","SUI","BEAM","ONDO","JUP",
+  "JTO","PYTH","STX","MKR","COMP","SNX","YFI","BAL","1INCH",
+])
+
+function normalizeSymbol(symbol: string, type: AssetType): string {
+  if (type !== "crypto") return symbol.toUpperCase()
+  const s = symbol.toUpperCase()
+  if (s.endsWith("USDT")) return s
+  if (KNOWN_CRYPTO.has(s)) return `${s}USDT`
+  return s
+}
+
 interface MarketDataResult {
   candles: Candle[]
   indicators: IndicatorResult | null
@@ -25,22 +42,23 @@ export function useMarketData(
   const [error, setError] = useState<string | null>(null)
   const [indicators, setIndicators] = useState<IndicatorResult | null>(null)
 
-  const candleKey = `${symbol}:${timeframe}`
+  const normalSymbol = normalizeSymbol(symbol, type)
+  const candleKey = `${normalSymbol}:${timeframe}`
   const candles = candleMap[candleKey] ?? []
   const wsRef = useRef<WebSocket | null>(null)
 
   useEffect(() => {
-    if (!symbol || type !== "crypto") return
+    if (!normalSymbol || type !== "crypto") return
     const interval = timeframeToBinanceInterval(timeframe)
-    const ws = createBinanceKlineWS(symbol, interval, (candle) => {
-      updateLastCandle(symbol, candle, timeframe)
+    const ws = createBinanceKlineWS(normalSymbol, interval, (candle) => {
+      updateLastCandle(normalSymbol, candle, timeframe)
     })
     wsRef.current = ws
     return () => { ws.close(); wsRef.current = null }
-  }, [symbol, type, timeframe])
+  }, [normalSymbol, type, timeframe])
 
   const fetchData = useCallback(async () => {
-    if (!symbol) return
+    if (!normalSymbol) return
 
     setLoading(true)
     setError(null)
@@ -50,12 +68,10 @@ export function useMarketData(
 
       if (type === "crypto") {
         const interval = timeframeToBinanceInterval(timeframe)
-        data = await fetchKlinesDirect(symbol, interval, limit)
+        data = await fetchKlinesDirect(normalSymbol, interval, limit)
       } else {
-        const range = getRangeFromTimeframe(timeframe)
-        const interval = getIntervalFromTimeframe(timeframe)
         const res = await fetch(
-          `/api/market/stocks/${symbol}?type=klines&range=${range}&interval=${interval}`
+          `/api/market/stocks/${normalSymbol}?type=klines&timeframe=${timeframe}`
         )
 
         if (!res.ok) throw new Error(`API error: ${res.status}`)
@@ -65,16 +81,19 @@ export function useMarketData(
       }
 
       if (data.length > 0) {
-        setCandles(symbol, data, timeframe)
+        setCandles(normalSymbol, data, timeframe)
         const ind = calcAllIndicators(data)
         setIndicators(ind)
+        setError(null)
+      } else if (candles.length === 0) {
+        setError(`No data for ${normalSymbol}. Symbol may not exist or data source unavailable.`)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch market data")
     } finally {
       setLoading(false)
     }
-  }, [symbol, type, timeframe, limit, setCandles])
+  }, [normalSymbol, type, timeframe, limit, setCandles])
 
   useEffect(() => {
     fetchData()
@@ -83,32 +102,4 @@ export function useMarketData(
   }, [fetchData])
 
   return { candles, indicators, loading, error, refetch: fetchData }
-}
-
-function getRangeFromTimeframe(tf: Timeframe): string {
-  const map: Record<Timeframe, string> = {
-    "1m": "1d",
-    "5m": "5d",
-    "15m": "5d",
-    "30m": "1mo",
-    "1h": "1mo",
-    "4h": "3mo",
-    "1d": "6mo",
-    "1w": "1y",
-  }
-  return map[tf] ?? "1mo"
-}
-
-function getIntervalFromTimeframe(tf: Timeframe): string {
-  const map: Record<Timeframe, string> = {
-    "1m": "1m",
-    "5m": "5m",
-    "15m": "15m",
-    "30m": "30m",
-    "1h": "1h",
-    "4h": "1h",
-    "1d": "1d",
-    "1w": "1d",
-  }
-  return map[tf] ?? "1h"
 }

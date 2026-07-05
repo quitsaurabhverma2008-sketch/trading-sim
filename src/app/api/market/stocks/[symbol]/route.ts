@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
-import { fetchStockCandlesMultiSource, fetchYahooQuote } from "@/lib/market/stocks"
+import { fetchStockCandles, fetchYahooQuote } from "@/lib/market/stocks"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ symbol: string }> }) {
   const { symbol } = await params
   const { searchParams } = new URL(request.url)
   const type = searchParams.get("type") ?? "klines"
-  const range = (searchParams.get("range") ?? "1mo") as "1d" | "5d" | "1mo" | "3mo" | "6mo" | "1y"
-  const interval = (searchParams.get("interval") ?? "1h") as "1m" | "5m" | "15m" | "30m" | "1h" | "1d"
+  const timeframe = searchParams.get("timeframe") ?? "1h"
 
   try {
     switch (type) {
       case "klines": {
-        const candles = await fetchStockCandlesMultiSource(symbol.toUpperCase(), range, interval)
-        return NextResponse.json({ symbol, range, interval, candles })
+        const candles = await fetchStockCandles(symbol.toUpperCase(), timeframe)
+        return NextResponse.json({ symbol, timeframe, candles })
       }
       case "quote": {
         const quote = await fetchYahooQuote(symbol.toUpperCase())

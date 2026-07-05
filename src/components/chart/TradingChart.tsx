@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { createChart, CandlestickSeries, HistogramSeries, LineSeries, AreaSeries, ColorType, type IChartApi, type ISeriesApi, type CandlestickData, type HistogramData, type LineData, type AreaData, type Time } from "lightweight-charts"
 import { useMarketStore } from "@/stores/marketStore"
 import { useMarketData } from "@/hooks/useMarketData"
-import { BarChart3, TrendingUp, ChartLine } from "lucide-react"
+import { BarChart3, TrendingUp, ChartLine, Brain, X, Sparkles } from "lucide-react"
 
 type ChartStyle = "candle" | "line" | "area"
 
@@ -37,6 +37,77 @@ export function TradingChart() {
   const [showSMA, setShowSMA] = useState(true)
   const [showEMA, setShowEMA] = useState(true)
   const [showBB, setShowBB] = useState(false)
+  const [aiPanelOpen, setAiPanelOpen] = useState(false)
+  const [aiAnalysis, setAiAnalysis] = useState("")
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState<string | null>(null)
+  const aiAbortRef = useRef<AbortController | null>(null)
+
+  function handleAIAnalysis() {
+    if (aiLoading) return
+    setAiPanelOpen(true)
+    setAiAnalysis("")
+    setAiError(null)
+    setAiLoading(true)
+
+    const summary = {
+      symbol: activeSymbol,
+      timeframe: activeTimeframe,
+      candles: candles.slice(-50).map(c => ({ t: c.time, o: c.open, h: c.high, l: c.low, c: c.close, v: c.volume })),
+      rsi: indicators?.rsi?.value?.toFixed(1),
+      macd: indicators?.macd ? { macd: indicators.macd.macd.toFixed(4), signal: indicators.macd.signal.toFixed(4), hist: indicators.macd.histogram.toFixed(4) } : null,
+      sma: indicators?.sma ? indicators.sma.slice(-3).map(v => v.toFixed(2)) : null,
+      ema: indicators?.ema ? indicators.ema.slice(-3).map(v => v.toFixed(2)) : null,
+      bb: indicators?.bb ? { upper: indicators.bb.upper.toFixed(2), lower: indicators.bb.lower.toFixed(2) } : null,
+    }
+
+    const controller = new AbortController()
+    aiAbortRef.current = controller
+
+    fetch("/api/ai/xsmodel/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "kronos-base",
+        messages: [
+          { role: "user", content: `Analyze this chart data for ${activeSymbol} (${activeTimeframe} timeframe) and provide technical analysis:\n${JSON.stringify(summary, null, 2)}` },
+        ],
+        temperature: 0.3,
+        stream: true,
+      }),
+      signal: controller.signal,
+    }).then(async (res) => {
+      if (!res.ok) throw new Error(`API error: ${res.status}`)
+      if (!res.body) throw new Error("No response body")
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      let fullText = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() ?? ""
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue
+          const json = line.slice(6)
+          if (json === "[DONE]") break
+          try {
+            const d = JSON.parse(json) as { choices: { delta: { content?: string } }[] }
+            const content = d.choices?.[0]?.delta?.content ?? ""
+            if (content) { fullText += content; setAiAnalysis(fullText) }
+          } catch { }
+        }
+      }
+      setAiLoading(false)
+    }).catch((err) => {
+      if (err.name !== "AbortError") { setAiError(err.message); setAiLoading(false) }
+    })
+  }
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -134,18 +205,58 @@ export function TradingChart() {
         <button onClick={() => setShowSMA(!showSMA)} className={`text-[10px] px-1.5 py-0.5 rounded font-medium uppercase ${showSMA ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}>SMA</button>
         <button onClick={() => setShowEMA(!showEMA)} className={`text-[10px] px-1.5 py-0.5 rounded font-medium uppercase ${showEMA ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}>EMA</button>
         <button onClick={() => setShowBB(!showBB)} className={`text-[10px] px-1.5 py-0.5 rounded font-medium uppercase ${showBB ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}>BB</button>
+        <div className="w-px h-4 bg-border mx-1" />
+        <button
+          onClick={handleAIAnalysis}
+          disabled={aiLoading || candles.length === 0}
+          className={`text-[10px] px-1.5 py-0.5 rounded font-medium uppercase flex items-center gap-1 ${aiPanelOpen ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"} disabled:opacity-50`}
+          title="Analyze chart with AI"
+        >
+          <Brain className="h-3 w-3" />
+          AI
+          {aiLoading && <Sparkles className="h-2.5 w-2.5 animate-pulse" />}
+        </button>
       </div>
 
-      <div className="flex-1 relative min-h-0">
-        <div ref={containerRef} className="absolute inset-0" />
-        {error && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
-            <div className="text-sm text-red-500">{error}</div>
-          </div>
-        )}
-        {loading && !error && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
-            <div className="text-sm text-muted-foreground animate-pulse">Loading chart data...</div>
+      <div className="flex-1 relative min-h-0 flex">
+        <div className={`absolute inset-0 ${aiPanelOpen ? "right-80" : ""}`}>
+          <div ref={containerRef} className="absolute inset-0" />
+          {error && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
+              <div className="text-sm text-red-500">{error}</div>
+            </div>
+          )}
+          {loading && !error && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
+              <div className="text-sm text-muted-foreground animate-pulse">Loading chart data...</div>
+            </div>
+          )}
+        </div>
+
+        {aiPanelOpen && (
+          <div className="absolute right-0 top-0 bottom-0 w-80 border-l bg-background z-20 flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-2 border-b shrink-0">
+              <div className="flex items-center gap-1.5 text-sm font-semibold">
+                <Brain className="h-4 w-4" />
+                AI Analysis
+              </div>
+              <button onClick={() => { setAiPanelOpen(false); aiAbortRef.current?.abort() }} className="p-1 rounded hover:bg-accent">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 text-xs leading-relaxed whitespace-pre-wrap">
+              {aiLoading && !aiAnalysis && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Sparkles className="h-3 w-3 animate-pulse" />
+                  Analyzing chart...
+                </div>
+              )}
+              {aiError && <div className="text-red-500">{aiError}</div>}
+              {aiAnalysis && <div>{aiAnalysis}</div>}
+              {!aiLoading && !aiAnalysis && !aiError && (
+                <div className="text-muted-foreground">Click "AI" button to analyze the current chart.</div>
+              )}
+            </div>
           </div>
         )}
       </div>
