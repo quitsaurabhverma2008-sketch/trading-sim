@@ -139,6 +139,17 @@ function openRouterHandler(apiKey: string): ProviderHandler {
   }
 }
 
+function nvidiaHandler(apiKey: string): ProviderHandler {
+  const h = openAIHandler(apiKey)
+  return {
+    ...h,
+    buildRequest: (req) => {
+      const r = h.buildRequest(req)
+      return { ...r, url: "https://integrate.api.nvidia.com/v1/chat/completions" }
+    },
+  }
+}
+
 function ollamaHandler(): ProviderHandler {
   return {
     buildRequest: ({ model, messages, systemPrompt, temperature, stream }) => {
@@ -170,6 +181,7 @@ export function getProviderHandler(providerId: AIProviderId, apiKey: string): Pr
     case "google": return googleHandler(apiKey)
     case "groq": return groqHandler(apiKey)
     case "openrouter": return openRouterHandler(apiKey)
+    case "nvidia": return nvidiaHandler(apiKey)
     case "ollama": return ollamaHandler()
     default: return openAIHandler(apiKey)
   }

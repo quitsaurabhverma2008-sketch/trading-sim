@@ -1,4 +1,4 @@
-export type AIProviderId = "openai" | "anthropic" | "google" | "groq" | "openrouter" | "ollama"
+export type AIProviderId = "openai" | "anthropic" | "google" | "groq" | "openrouter" | "ollama" | "nvidia"
 
 export interface AIProviderConfig {
   id: AIProviderId
