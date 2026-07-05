@@ -144,8 +144,8 @@ export function calcAllIndicators(candles: Candle[]): IndicatorResult {
   return {
     rsi: calcRSI(closes),
     macd: calcMACD(closes),
-    sma: calcSMA(closes, 20).slice(-3),
-    ema: calcEMA(closes, 20).slice(-3),
+    sma: calcSMA(closes, 20),
+    ema: calcEMA(closes, 20),
     bb: calcBollingerBands(closes),
     volumeSMA: volumes.length > 20
       ? volumes.slice(-20).reduce((a, b) => a + b, 0) / 20

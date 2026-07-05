@@ -15,7 +15,7 @@ interface SymbolResult {
 }
 
 export function SymbolSearch() {
-  const { activeSymbol, setActiveSymbol, realtimePrices, tickers } = useMarketStore()
+  const { activeSymbol, setActiveSymbol, realtimePrices, tickers, activeAssetType } = useMarketStore()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<SymbolResult[]>([])
@@ -61,8 +61,8 @@ export function SymbolSearch() {
     : allItems.slice(0, 50)
 
   const selectSymbol = useCallback(
-    (symbol: string) => {
-      setActiveSymbol(symbol)
+    (symbol: string, type: "crypto" | "stock") => {
+      setActiveSymbol(symbol, type)
       setOpen(false)
       setQuery("")
     },
@@ -130,7 +130,7 @@ export function SymbolSearch() {
               return (
                 <button
                   key={s.symbol}
-                  onClick={() => selectSymbol(s.symbol)}
+                  onClick={() => selectSymbol(s.symbol, s.type)}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-accent transition-colors ${
                     isSelected ? "bg-accent" : ""
                   }`}

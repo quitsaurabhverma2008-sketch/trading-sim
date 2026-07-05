@@ -8,6 +8,7 @@ interface MarketState {
   orderBooks: Record<string, OrderBook>
   connectionStatus: ConnectionStatus
   activeSymbol: string
+  activeAssetType: "crypto" | "stock"
   activeTimeframe: Timeframe
 
   setCandles: (symbol: string, candles: Candle[], timeframe: Timeframe) => void
@@ -16,7 +17,7 @@ interface MarketState {
   setTickers: (tickers: Record<string, Ticker24h>) => void
   setOrderBook: (symbol: string, book: OrderBook) => void
   setConnectionStatus: (status: ConnectionStatus) => void
-  setActiveSymbol: (symbol: string) => void
+  setActiveSymbol: (symbol: string, type?: "crypto" | "stock") => void
   setActiveTimeframe: (tf: Timeframe) => void
 }
 
@@ -31,6 +32,7 @@ export const useMarketStore = create<MarketState>()((set) => ({
   orderBooks: {},
   connectionStatus: "disconnected",
   activeSymbol: "BTCUSDT",
+  activeAssetType: "crypto",
   activeTimeframe: "1h",
 
   setCandles: (symbol, newCandles, timeframe) => {
@@ -76,8 +78,8 @@ export const useMarketStore = create<MarketState>()((set) => ({
     set({ connectionStatus: status })
   },
 
-  setActiveSymbol: (symbol) => {
-    set({ activeSymbol: symbol })
+  setActiveSymbol: (symbol, type) => {
+    set({ activeSymbol: symbol, ...(type ? { activeAssetType: type } : {}) })
   },
 
   setActiveTimeframe: (tf) => {

@@ -11,10 +11,13 @@ import { HoldingsTable } from "@/components/portfolio/HoldingsTable"
 import { PerformanceMetrics } from "@/components/portfolio/PerformanceMetrics"
 import { AIChat } from "@/components/ai/AIChat"
 import { SymbolSearch } from "@/components/market/SymbolSearch"
+import { OrderBook } from "@/components/chart/OrderBook"
+import { PnLCalculator } from "@/components/trading/PnLCalculator"
 import { Button } from "@/components/ui/button"
 import { TIMEFRAMES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
-import { Brain, Activity } from "lucide-react"
+import { Brain, Activity, BookOpen, Calculator } from "lucide-react"
+import { useState } from "react"
 
 const TOP_CRYPTO = [
   "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT",
@@ -24,6 +27,8 @@ const TOP_CRYPTO = [
 export default function DashboardPage() {
   const { activeTimeframe, setActiveTimeframe, connectionStatus } = useMarketStore()
   const { toggleAIPanel, toggleOrderPanel, aiPanelOpen } = useUIStore()
+  const [showOrderBook, setShowOrderBook] = useState(false)
+  const [showPnLCalc, setShowPnLCalc] = useState(false)
 
   useRealtime(TOP_CRYPTO)
   useTicker24h(TOP_CRYPTO)
@@ -49,6 +54,14 @@ export default function DashboardPage() {
 
         <div className="flex items-center gap-1 shrink-0">
           <div className={cn("h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full", connectionStatus === "connected" ? "bg-emerald-500" : "bg-red-500")} title={connectionStatus} />
+          <Button variant={showOrderBook ? "default" : "outline"} size="xs" className="text-xs gap-1 h-7" onClick={() => setShowOrderBook((p) => !p)} title="Order Book">
+            <BookOpen className="h-3 w-3" />
+            <span className="hidden sm:inline">Depth</span>
+          </Button>
+          <Button variant={showPnLCalc ? "default" : "outline"} size="xs" className="text-xs gap-1 h-7" onClick={() => setShowPnLCalc((p) => !p)} title="PnL Calculator">
+            <Calculator className="h-3 w-3" />
+            <span className="hidden sm:inline">PnL</span>
+          </Button>
           <Button variant="outline" size="xs" className="text-xs gap-1 h-7" onClick={toggleOrderPanel}>
             <Activity className="h-3 w-3" />
             <span className="hidden sm:inline">Trade</span>
@@ -89,6 +102,18 @@ export default function DashboardPage() {
               <HoldingsTable />
             </div>
             <PerformanceMetrics />
+            {showOrderBook && (
+              <div className="border rounded-lg overflow-hidden">
+                <div className="text-[11px] font-semibold px-2 py-1.5 bg-muted/50">Order Book</div>
+                <OrderBook />
+              </div>
+            )}
+            {showPnLCalc && (
+              <div className="border rounded-lg overflow-hidden">
+                <div className="text-[11px] font-semibold px-2 py-1.5 bg-muted/50">PnL Calculator</div>
+                <PnLCalculator />
+              </div>
+            )}
             <OrderPanel />
           </div>
         </div>

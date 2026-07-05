@@ -37,6 +37,12 @@ export function formatVolume(value: number): string {
   return value.toFixed(2)
 }
 
+export function formatQuantity(value: number): string {
+  if (value >= 1000) return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })
+  if (value >= 1) return value.toFixed(4)
+  return value.toFixed(6)
+}
+
 export function formatTime(timestamp: number, format: "short" | "long" = "short"): string {
   const d = new Date(timestamp)
   if (format === "short") {
