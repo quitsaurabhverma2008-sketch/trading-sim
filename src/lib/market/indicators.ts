@@ -226,3 +226,193 @@ export function calcOBV(candles: Candle[]): number {
   }
   return obv
 }
+
+export function calcATR(candles: Candle[], period = 14): number | undefined {
+  if (candles.length < period + 1) return undefined
+  const tr: number[] = []
+  for (let i = 1; i < candles.length; i++) {
+    const high = candles[i].high
+    const low = candles[i].low
+    const prevClose = candles[i - 1].close
+    tr.push(Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose)))
+  }
+  const atrValues = calcSMA(tr, period)
+  return atrValues[atrValues.length - 1]
+}
+
+export interface DetectedPattern {
+  name: string
+  direction: "bullish" | "bearish" | "neutral"
+  strength: number
+  description: string
+}
+
+export function detectCandlestickPatterns(candles: Candle[]): DetectedPattern[] {
+  if (candles.length < 3) return []
+  const patterns: DetectedPattern[] = []
+  const last = candles[candles.length - 1]
+  const prev = candles[candles.length - 2]
+  const prev2 = candles.length > 2 ? candles[candles.length - 3] : null
+
+  const bodySize = Math.abs(last.close - last.open)
+  const upperWick = last.high - Math.max(last.open, last.close)
+  const lowerWick = Math.min(last.open, last.close) - last.low
+  const totalRange = last.high - last.low
+  if (totalRange === 0) return patterns
+
+  const bodyRatio = bodySize / totalRange
+
+  if (bodyRatio < 0.1) {
+    patterns.push({ name: "Doji", direction: "neutral", strength: 3, description: "Open and close nearly equal — indecision in market" })
+  }
+
+  const isBullish = last.close > last.open
+  if (lowerWick > bodySize * 2 && upperWick < bodySize * 0.3 && !isBullish) {
+    patterns.push({ name: "Hammer", direction: "bullish", strength: 4, description: "Long lower wick at bottom of downtrend — potential reversal up" })
+  }
+  if (upperWick > bodySize * 2 && lowerWick < bodySize * 0.3 && isBullish) {
+    patterns.push({ name: "Shooting Star", direction: "bearish", strength: 4, description: "Long upper wick at top of uptrend — potential reversal down" })
+  }
+
+  if (candles.length >= 2 && prev2) {
+    const prevBody = Math.abs(prev.close - prev.open)
+    const prevBullish = prev.close > prev.open
+    if (!prevBullish && isBullish && last.close > prev.open && last.open < prev.close) {
+      patterns.push({ name: "Bullish Engulfing", direction: "bullish", strength: 5, description: "Green candle fully engulfs previous red — strong reversal signal" })
+    }
+    if (prevBullish && !isBullish && last.close < prev.open && last.open > prev.close) {
+      patterns.push({ name: "Bearish Engulfing", direction: "bearish", strength: 5, description: "Red candle fully engulfs previous green — strong reversal down" })
+    }
+  }
+
+  if (bodySize > totalRange * 0.7 && upperWick < bodySize * 0.1 && lowerWick < bodySize * 0.1) {
+    patterns.push({
+      name: isBullish ? "Marubozu (Bullish)" : "Marubozu (Bearish)",
+      direction: isBullish ? "bullish" : "bearish",
+      strength: 4,
+      description: `Full-bodied ${isBullish ? "green" : "red"} candle with no wicks — strong ${isBullish ? "buying" : "selling"} pressure`,
+    })
+  }
+
+  return patterns
+}
+
+export function detectChartPatterns(candles: Candle[]): DetectedPattern[] {
+  if (candles.length < 20) return []
+  const patterns: DetectedPattern[] = []
+  const recent = candles.slice(-30)
+  const closes = recent.map(c => c.close)
+  const highs = recent.map(c => c.high)
+  const lows = recent.map(c => c.low)
+
+  const lookback = Math.min(14, Math.floor(recent.length / 2))
+  const recentHighs = highs.slice(-lookback)
+  const recentLows = lows.slice(-lookback)
+  const currentPrice = closes[closes.length - 1]
+
+  const maxIdx = recentHighs.indexOf(Math.max(...recentHighs))
+  const minIdx = recentLows.indexOf(Math.min(...recentLows))
+
+  if (maxIdx > 0 && currentPrice > recentHighs[maxIdx]) {
+    patterns.push({ name: "Breakout Above Resistance", direction: "bullish", strength: 5, description: `Price broke above recent high of ${recentHighs[maxIdx]} — bullish breakout` })
+  }
+  if (minIdx > 0 && currentPrice < recentLows[minIdx]) {
+    patterns.push({ name: "Breakdown Below Support", direction: "bearish", strength: 5, description: `Price broke below recent low of ${recentLows[minIdx]} — bearish breakdown` })
+  }
+
+  const midIdx = Math.floor(recent.length / 2)
+  const firstHalf = closes.slice(0, midIdx)
+  const secondHalf = closes.slice(midIdx)
+  if (firstHalf.length > 3 && secondHalf.length > 3) {
+    const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length
+    const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length
+    if (secondAvg > firstAvg * 1.05) {
+      patterns.push({ name: "Higher Lows Formation", direction: "bullish", strength: 3, description: "Price making higher lows in second half — uptrend structure intact" })
+    } else if (secondAvg < firstAvg * 0.95) {
+      patterns.push({ name: "Lower Highs Formation", direction: "bearish", strength: 3, description: "Price making lower highs in second half — downtrend structure forming" })
+    }
+  }
+
+  const volatility = calcATR(candles, 14)
+  if (volatility && volatility < (highs.reduce((a, b) => a + b, 0) / highs.length) * 0.02) {
+    patterns.push({ name: "Low Volatility Squeeze", direction: "neutral", strength: 3, description: "ATR indicates low volatility — potential breakout incoming" })
+  }
+
+  return patterns
+}
+
+export interface RegimeInfo {
+  regime: "trending_up" | "trending_down" | "ranging" | "volatile"
+  strength: "strong" | "moderate" | "weak"
+  adx: number | undefined
+  atr: number | undefined
+  atrPercent: number | undefined
+  description: string
+}
+
+export function detectMarketRegime(candles: Candle[]): RegimeInfo {
+  if (candles.length < 30) {
+    return { regime: "ranging", strength: "weak", adx: undefined, atr: undefined, atrPercent: undefined, description: "Insufficient data for regime detection" }
+  }
+
+  const closes = candles.map(c => c.close)
+  const adx = calcADX(candles)
+  const atr = calcATR(candles)
+  const avgPrice = closes.reduce((a, b) => a + b, 0) / closes.length
+  const atrPercent = atr ? (atr / avgPrice) * 100 : undefined
+
+  const recentCloses = closes.slice(-20)
+  const firstHalf = recentCloses.slice(0, 10)
+  const secondHalf = recentCloses.slice(-10)
+  const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length
+  const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length
+  const changePct = ((secondAvg - firstAvg) / firstAvg) * 100
+
+  let regime: RegimeInfo["regime"] = "ranging"
+  let strength: RegimeInfo["strength"] = "weak"
+  let description = ""
+
+  if (atrPercent && atrPercent > 4) {
+    regime = "volatile"
+    strength = "strong"
+    description = `High volatility (ATR ${atrPercent.toFixed(2)}% of price) — wide swings expected`
+  } else if (adx !== undefined) {
+    if (adx > 35) {
+      if (changePct > 3) {
+        regime = "trending_up"
+        description = `Strong uptrend (ADX ${adx.toFixed(1)}) — momentum favors bulls`
+      } else if (changePct < -3) {
+        regime = "trending_down"
+        description = `Strong downtrend (ADX ${adx.toFixed(1)}) — momentum favors bears`
+      } else {
+        regime = "ranging"
+        description = `High ADX (${adx.toFixed(1)}) but minimal net change — possible consolidation or trend transition`
+      }
+      strength = "strong"
+    } else if (adx > 20) {
+      if (Math.abs(changePct) > 2) {
+        regime = changePct > 0 ? "trending_up" : "trending_down"
+        strength = "moderate"
+        description = `Moderate trend (ADX ${adx.toFixed(1)}) — directional bias ${changePct > 0 ? "up" : "down"}`
+      } else {
+        regime = "ranging"
+        strength = "moderate"
+        description = `Weak trend (ADX ${adx.toFixed(1)}) — price oscillating in range`
+      }
+    } else {
+      regime = "ranging"
+      strength = "weak"
+      description = `No clear trend (ADX ${adx.toFixed(1)}) — range-bound conditions`
+    }
+  } else {
+    if (Math.abs(changePct) > 5) {
+      regime = changePct > 0 ? "trending_up" : "trending_down"
+      strength = "moderate"
+      description = `${changePct > 0 ? "Upward" : "Downward"} bias detected`
+    } else {
+      description = "Price moving sideways within narrow range"
+    }
+  }
+
+  return { regime, strength, adx, atr, atrPercent, description }
+}

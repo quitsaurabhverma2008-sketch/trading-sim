@@ -1,0 +1,95 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#0d1117" rx="12"/>
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1f2e" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0.8"/>
+    </linearGradient>
+    <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="gr" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <linearGradient id="gy" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g1)" rx="12"/>
+  <text x="40" y="50" fill="#e6edf3" font-family="sans-serif" font-size="22" font-weight="bold">AI Providers — 9 Supported</text>
+  <text x="40" y="78" fill="#8b949e" font-family="monospace" font-size="12">Bring Your Own Key · All major models · Streaming · Hinglish</text>
+
+  <rect x="40" y="100" width="1120" height="520" fill="#111827" rx="10" stroke="#2d333b" stroke-width="1"/>
+
+  <rect x="60" y="120" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="88" cy="150" r="16" fill={#10a37f}" opacity="0.2"/>
+    <text x="88" y="155" fill="#10a37f" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">O</text>
+    <text x="120" y="156" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">OpenAI</text>
+    <text x="80" y="182" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="80" y="202" fill="#e6edf3" font-family="monospace" font-size="11">GPT-4o, GPT-4o-mini, o3, o4-mini</text>
+    <text x="80" y="228" fill="#8b949e" font-family="monospace" font-size="10">🔑 API key required (encrypted storage)</text>
+<rect x="420" y="120" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="448" cy="150" r="16" fill={#d97706}" opacity="0.2"/>
+    <text x="448" y="155" fill="#d97706" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">A</text>
+    <text x="480" y="156" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">Anthropic</text>
+    <text x="440" y="182" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="440" y="202" fill="#e6edf3" font-family="monospace" font-size="11">Claude Opus 5, Claude Sonnet 5, Claude Haiku 4</text>
+    <text x="440" y="228" fill="#8b949e" font-family="monospace" font-size="10">🔑 API key required (encrypted storage)</text>
+<rect x="780" y="120" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="808" cy="150" r="16" fill={#4285f4}" opacity="0.2"/>
+    <text x="808" y="155" fill="#4285f4" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">G</text>
+    <text x="840" y="156" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">Google</text>
+    <text x="800" y="182" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="800" y="202" fill="#e6edf3" font-family="monospace" font-size="11">Gemini 2.5 Flash, Gemini 2.5 Pro</text>
+    <text x="800" y="228" fill="#8b949e" font-family="monospace" font-size="10">🔑 API key required (encrypted storage)</text>
+<rect x="60" y="275" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="88" cy="305" r="16" fill={#f97316}" opacity="0.2"/>
+    <text x="88" y="310" fill="#f97316" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">G</text>
+    <text x="120" y="311" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">Groq</text>
+    <text x="80" y="337" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="80" y="357" fill="#e6edf3" font-family="monospace" font-size="11">Llama 4, Mixtral, Gemma 2</text>
+    <text x="80" y="383" fill="#8b949e" font-family="monospace" font-size="10">🔑 API key required (encrypted storage)</text>
+<rect x="420" y="275" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="448" cy="305" r="16" fill={#8b5cf6}" opacity="0.2"/>
+    <text x="448" y="310" fill="#8b5cf6" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">O</text>
+    <text x="480" y="311" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">OpenRouter</text>
+    <text x="440" y="337" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="440" y="357" fill="#e6edf3" font-family="monospace" font-size="11">200+ models from all providers</text>
+    <text x="440" y="383" fill="#8b949e" font-family="monospace" font-size="10">🔑 API key required (encrypted storage)</text>
+<rect x="780" y="275" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="808" cy="305" r="16" fill={#ec4899}" opacity="0.2"/>
+    <text x="808" y="310" fill="#ec4899" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">O</text>
+    <text x="840" y="311" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">Ollama</text>
+    <text x="800" y="337" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="800" y="357" fill="#e6edf3" font-family="monospace" font-size="11">Local models (Llama, Mistral, Qwen)</text>
+    <text x="800" y="383" fill="#8b949e" font-family="monospace" font-size="10">🔑 API key required (encrypted storage)</text>
+<rect x="60" y="430" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="88" cy="460" r="16" fill={#76b900}" opacity="0.2"/>
+    <text x="88" y="465" fill="#76b900" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">N</text>
+    <text x="120" y="466" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">NVIDIA</text>
+    <text x="80" y="492" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="80" y="512" fill="#e6edf3" font-family="monospace" font-size="11">32 models (Llama, Mistral, DeepSeek, Qwen)</text>
+    <text x="80" y="538" fill="#8b949e" font-family="monospace" font-size="10">🔑 API key required (encrypted storage)</text>
+<rect x="420" y="430" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="448" cy="460" r="16" fill={#4f46e5}" opacity="0.2"/>
+    <text x="448" y="465" fill="#4f46e5" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">D</text>
+    <text x="480" y="466" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">DeepSeek</text>
+    <text x="440" y="492" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="440" y="512" fill="#e6edf3" font-family="monospace" font-size="11">DeepSeek V3 Chat, DeepSeek R1 Reasoner</text>
+    <text x="440" y="538" fill="#8b949e" font-family="monospace" font-size="10">🔑 API key required (encrypted storage)</text>
+<rect x="780" y="430" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+    <circle cx="808" cy="460" r="16" fill={#22c55e}" opacity="0.2"/>
+    <text x="808" y="465" fill="#22c55e" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">X</text>
+    <text x="840" y="466" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">Built-in AI</text>
+    <text x="800" y="492" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
+    <text x="800" y="512" fill="#e6edf3" font-family="monospace" font-size="11">TA Mini/Small/Base/Large (free, no key)</text>
+    <text x="800" y="538" fill="#8b949e" font-family="monospace" font-size="10">✓ Free, no API key needed</text>
+
+  <rect x="0" y="627" width="1200" height="48" fill="#161b22" opacity="0.9"/>
+  <text x="24" y="657" fill="#8b949e" font-family="monospace" font-size="13">XS TRADER v2.0</text>
+  <text x="250" y="657" fill="#8b949e" font-family="monospace" font-size="13">Paper Trading Simulator</text>
+  <text x="1176" y="657" fill="#8b949e" font-family="monospace" font-size="13" text-anchor="end">$10,000 Virtual Portfolio</text>
+  </svg>

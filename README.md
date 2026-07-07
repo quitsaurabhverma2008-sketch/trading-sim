@@ -2,116 +2,145 @@
 
 > **Live Demo:** [https://xsdemo.vercel.app](https://xsdemo.vercel.app)
 
-![Trading Dashboard](https://images.unsplash.com/photo-1642790551116-18e150f248e3?w=1200&h=600&fit=crop)
+![Dashboard Overview](./public/readme/dashboard.svg)
 
-**TradeSim** is a free, web‑based AI‑powered crypto & stock paper‑trading simulator. Practice trading with **$10,000 virtual USD**, analyze markets with **real‑time charts**, and get AI‑powered research assistance — no API key needed for the built-in AI.
+**TradeSim** is a free, web‑based AI‑powered crypto & stock paper‑trading simulator. Practice trading with **$10,000 virtual USD**, analyze markets with **real‑time charts**, and get AI‑powered research assistance in **Hinglish** — no API key needed for the built-in AI.
 
 ---
 
-## ✨ Features
+## Features
 
-### 📊 Real‑Time Trading Dashboard
+### Real-Time Trading Dashboard
+
+![Advanced Chart with Indicators](public/readme/chart.svg)
 
 | Feature | Description |
 |---|---|
-| **Live Charts** | Candlestick, Line, Area with Lightweight Charts v5 |
-| **Real‑time WebSocket** | Klines update live with every tick |
-| **Indicators** | RSI, MACD, SMA, EMA, Bollinger Bands, ADX, OBV |
+| **Live Charts** | Candlestick, Line, Area with Lightweight Charts v5. Volume pane, SMA/EMA/BB overlays |
+| **Real-time WebSocket** | 440+ crypto symbols stream live tick-by-tick via Binance WebSocket |
+| **Technical Indicators** | RSI (14), MACD (12/26/9), SMA (20), EMA (20), Bollinger Bands (20,2), ADX (14), OBV, ATR (14) |
+| **Market Regime Detection** | Trending Up/Down, Ranging, Volatile — ADX + ATR based classification |
+| **Candlestick Patterns** | Doji, Hammer, Shooting Star, Engulfing, Marubozu — auto-detected |
+| **Chart Patterns** | Breakout/breakdown, Higher Lows, Lower Highs, Volatility Squeeze |
 | **Order Book** | 15-level depth with 3s polling |
-| **PnL Calculator** | Long/Short with entry/exit prices |
-| **Symbol Search** | 1500+ symbols (crypto + stocks) |
+| **PnL Calculator** | Long/Short with entry/exit prices, position sizing |
+| **Symbol Search** | 1500+ symbols (440+ crypto, 1081 stocks) |
 | **Timeframes** | 1m, 5m, 15m, 30m, 1h, 4h, 1D, 1W |
 
-![Candlestick Chart](https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop)
+---
 
-### 💰 Paper Trading
+### Paper Trading
 
-![Portfolio](https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop)
+![Portfolio Performance](public/readme/portfolio.svg)
 
-- **$10,000 demo balance**
+- **$10,000 demo balance** — reset anytime
 - Market, Limit & Stop-Loss orders
-- 25/50/75/100% quick sizing
-- Real-time unrealized & realized P&L
-- Filterable trade history
-- Holdings table with return %
-- Win rate, total trades, best/worst metrics
+- 25/50/75/100% quick position sizing
+- Real-time unrealized & realized P&L tracking
+- Filterable trade history with date/symbol/type/P&L columns
+- Holdings table with average cost, market price, return %
+- Performance metrics: Win Rate, Best/Worst Trade, Avg Trade, Equity Curve
+- 68.5% win rate target with real statistical tracking
 
-### 🤖 AI Research Assistant
+---
 
-**8 providers** — Bring Your Own Key OR use the free Built-in AI:
+### AI Research Assistant — 9 Providers
+
+![AI Chat with Prediction Card](public/readme/ai-chat.svg)
+
+**Bring Your Own Key** OR use the free **Built-in AI**:
 
 | Provider | Key Required | Models |
 |---|---|---|
-| **Built-in AI** (TA) | ❌ Free | Technical Analysis + Prediction card (Hinglish, Claude Fable 5-style prompt) |
-| **OpenAI** | ✅ | GPT-4o, GPT-4o-mini, o3, o4-mini |
-| **Anthropic** | ✅ | Claude 3.5/4 Sonnet, Haiku |
-| **Google** | ✅ | Gemini 2.0/2.5 Flash, Pro |
-| **Groq** | ✅ | Llama 3, Mixtral, Gemma 2 |
-| **OpenRouter** | ✅ | 200+ models |
-| **NVIDIA** | ✅ | 50+ free NIM models |
-| **Ollama** | ❌ Free | Local models |
+| **Built-in AI** (xsmodel) | Free | TA Mini/Small/Base/Large — Hinglish + Prediction Card |
+| **OpenAI** | Key | GPT-4o, GPT-4o-mini, o3, o4-mini |
+| **Anthropic** | Key | Claude Opus 5, Claude Sonnet 5, Claude Haiku 4 |
+| **Google** | Key | Gemini 2.5 Flash, Gemini 2.5 Pro |
+| **Groq** | Key | Llama 4, Mixtral, Gemma 2 (fast inference) |
+| **OpenRouter** | Key | 200+ models from all providers |
+| **Ollama** | Free | Local models (Llama, Mistral, Qwen) |
+| **NVIDIA** | Key | 32 models — Llama, Mistral, DeepSeek, Qwen, Gemma |
+| **DeepSeek** | Key | DeepSeek V3 Chat, DeepSeek R1 Reasoner |
 
-![AI Chat](https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop)
+**AI Market Context Injection:** Every AI response automatically gets live quote + technical analysis injected as system context — works with ALL 9 providers without requiring function-calling support.
 
-**Built-in AI** — click the **AI** button on any chart to get instant technical analysis with a structured **prediction card** (Entry/SL/TP/R:R/Confidence/Verdict) based on live chart data. No setup required.
+#### AI Tools Available
 
-The AI outputs in **Hinglish** (Hindi-English mix) with a friendly "Bhai" tone — 4-section detailed analysis (Technical, Fundamental, Sentiment, Risk) + a compact **Prediction/Trade Setup** block at the end with Entry, Stop Loss, Take Profit, Risk:Reward, Confidence %, and Verdict.
+The AI has access to these **7 data tools** for market analysis:
 
-### 🧠 System Prompt Evolution
+| Tool | Description |
+|---|---|
+| `get_historical_data` | OHLCV candle data — any timeframe (1m to 1w) |
+| `get_realtime_quote` | Live price + 24h stats (change, high, low, volume) |
+| `get_technical_analysis` | Full RSI, MACD, SMA, EMA, BB, Support/Resistance, Volume, + Regime + Patterns |
+| `detect_patterns` | Candlestick patterns (Doji, Hammer, Engulfing, Marubozu) + Chart patterns (Breakout, Squeeze) |
+| `detect_regime` | Market regime classification: trending_up/down, ranging, volatile (ADX + ATR) |
+| `compare_symbols` | Side-by-side comparison of up to 5 symbols in a table |
+| `multi_timeframe_analysis` | Same symbol analyzed across 1h, 4h, 1d simultaneously |
 
-The AI system prompt evolved through **3 leaked prompt inspirations**:
+---
+
+### System Prompt Evolution
+
+![Prediction Card](public/readme/prediction-card.svg)
+
+The AI system prompt evolved through **4 leaked prompt inspirations**:
 
 | Iteration | Source | Key Additions |
 |---|---|---|
 | **v1** | Perplexity computer-use leak | XML structure (`<identity>`, `<analysis_plan>`, `<output_style>`), citation rules, disclaimer mandate |
 | **v2** | Gemini 3.5 Flash Hinglish | Warm peer tone, "Respond in Hinglish", simple indicator explanations |
-| **v3** | Claude Fable 5 + Opus 4.8 leaks | `<default_stance>` (naturally helpful), `<data_first>` (never skip live fetch), `<evenhandedness>` (neutral market stance), `<legal_and_financial_advice>` (factual info ≠ recommendations), `<responding_to_mistakes>` (own errors, no excuses), 5-section output with Prediction/Trade Setup card, no CoT leak, no system prompt attribution |
+| **v3** | Claude Fable 5 + Opus 4.8 leaks | `<default_stance>`, `<data_first>`, `<evenhandedness>`, `<legal_and_financial_advice>`, `<responding_to_mistakes>`, 5-section output, Prediction Card, no CoT leak |
+| **v3.1** | DeepSeek R1 + GPT Codex patterns | `<tools_available>` section listing 7 tools, human-readable tool output, multi-tool parallel patterns |
 
-See `src/lib/constants.ts:402` for the full prompt (504 lines).
+Each analysis follows a strict 5-section format:
+1. **Technical Analysis** — Price, S/R, Indicators with simple explanations
+2. **Fundamental & Macro** — Big picture, long-term trends
+3. **Sentiment & Liquidity** — Market mood, fear/greed
+4. **Risk & Volatility** — ATR, regime, safe side
+5. **Prediction / Trade Setup** — Entry/SL/TP/R:R/Confidence/Verdict
 
-### 🎯 AI Prediction Card
+> See `src/lib/constants.ts:413` for the full prompt (515+ lines).
 
-Every AI analysis ends with a compact structured trade setup:
+---
 
-| Field | Example |
-|---|---|
-| **Entry** | 62900–63000 |
-| **Stop Loss** | 62380 |
-| **Take Profit 1/2** | 63450 / 63950 |
-| **Risk:Reward** | 1:2.3 |
-| **Confidence** | 68% |
-| **Verdict** | "Wait for confirmation before entering long" |
+### Screeners & Market Overview
 
-The prediction card is **always preceded** by a 4-section Hinglish explanation (Technical, Fundamental, Sentiment, Risk) so users understand *why* before seeing *what*.
+![Market Screeners](public/readme/screeners.svg)
 
-### 📈 Screeners
+- **Technical Screener** — RSI, MACD crossover, MA cross, Bollinger Band breakout signals
+- **Volume Screener** — Unusual volume spikes compared to 20-period SMA
+- **Gainers & Losers** — Top/bottom 10 performers by 24h change
+- **10-symbol table** with Price, Change, RSI, MACD, Volume, Signal, Regime columns
+- Sortable by any column
 
-![Screeners](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop)
+![Crypto Market Heatmap](public/readme/heatmap.svg)
 
-- **Crypto Heatmap** — market-cap sized bubbles by 24h change
-- **Gainers & Losers** — top/bottom performers + volume screener
-- **Technical Screener** — RSI, MACD crossover, MA cross, BB breakout
-- **News Feed** — latest stories via NewsAPI
+**Crypto Heatmap** — Market-cap sized bubbles colored by 24h performance. Green = bullish, Red = bearish. Size = market cap. 20 top cryptocurrencies displayed in a treemap layout. Real-time data from Binance.
 
-### 🔔 Alerts & Watchlist
+---
 
-- Price alerts with browser notifications
-- Star symbols to track favorites
-- Real-time prices in sidebar
+### Alerts & Watchlist
 
-### ⌨️ Shortcuts
+- Price alerts with browser notifications (Web Notification API)
+- Set alerts at specific price levels per symbol
+- Star symbols to track favorites in the sidebar
+- Real-time prices in watchlist sidebar
+- Persisted across sessions via localStorage
+
+### Keyboard Shortcuts
 
 | Key | Action |
 |---|---|
 | `/` | Search symbols |
-| `1`-`7` | Timeframes |
-| `B` | AI page |
-| `T` | Order panel |
-| `S` | Sidebar |
+| `1`-`7` | Switch timeframes |
+| `B` | Open AI assistant |
+| `T` | Toggle order panel |
+| `S` | Toggle sidebar |
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 git clone https://github.com/quitsaurabhverma2008-sketch/trading-sim.git
@@ -124,79 +153,161 @@ Visit **http://localhost:3000** → click **"Continue as Guest"**.
 
 ---
 
-## 🔑 AI Provider Setup
+## AI Provider Setup
+
+![AI Providers](public/readme/providers.svg)
 
 1. Go to **Dashboard → AI** (`/dashboard/ai`)
 2. Open **Settings** (gear icon)
-3. Select provider → enter API key → **Test**
+3. Select provider → enter API key → click **Test Connection**
 4. Or select **Built-in AI** — works immediately, no key needed
 
 > Keys are encrypted with Web Crypto AES‑GCM in localStorage. Never sent to any server.
 
+### Provider Endpoints
+
+| Provider | Endpoint | Key Format |
+|---|---|---|
+| OpenAI | `https://api.openai.com/v1` | `sk-...` |
+| Anthropic | `https://api.anthropic.com/v1` | `sk-ant-...` |
+| Google | `https://generativelanguage.googleapis.com/v1beta` | `AIza...` |
+| Groq | `https://api.groq.com/openai/v1` | `gsk_...` |
+| OpenRouter | `https://openrouter.ai/api/v1` | `sk-or-...` |
+| Ollama | `http://localhost:11434` | (none) |
+| NVIDIA | `https://integrate.api.nvidia.com/v1` | `nvapi-...` |
+| DeepSeek | `https://api.deepseek.com/v1` | `sk-...` |
+| Built-in AI | (embedded) | (none) |
+
 ---
 
-## 🏗️ Architecture
+## Architecture
+
+![System Architecture](public/readme/architecture.svg)
 
 ```
 src/
 ├── app/
-│   ├── api/ai/xsmodel/       # Built-in AI chat + prediction
-│   ├── api/market/           # Crypto, stocks, symbols
-│   └── dashboard/            + login/
+│   ├── api/ai/xsmodel/           # Built-in AI chat (SSE streaming) + prediction
+│   ├── api/market/crypto/[symbol]# Crypto klines proxy
+│   ├── api/market/stocks/[symbol] # Stock data via Yahoo
+│   ├── api/market/symbols        # Symbol search list
+│   ├── dashboard/                 # 6 dashboard pages
+│   │   ├── ai/                   # AI chat interface
+│   │   ├── portfolio/            # Portfolio + trade history
+│   │   ├── screeners/            # Technical/Volume screeners
+│   │   ├── settings/             # User settings
+│   │   └── watchlist/            # Watchlist management
+│   └── login/                    # Guest login page
 ├── components/
-│   ├── ai/                   # AIChat, AISettings
-│   ├── chart/                # TradingChart (with AI button), OrderBook
-│   ├── layout/               # Header, Sidebar, Disclaimer
-│   ├── market/               # SymbolSearch, Heatmap, Screeners
-│   ├── portfolio/            # Summary, Holdings, Metrics
-│   ├── trading/              # OrderPanel, TradeHistory, PnLCalculator
-│   └── ui/                   # shadcn/ui components
-├── hooks/                    # useMarketData, useRealtime, useAlertChecker
+│   ├── ai/                       # AIChat, AISettings, ProviderSelector
+│   ├── chart/                    # TradingChart (AI button), OrderBook
+│   ├── layout/                   # Header, Sidebar, Disclaimer
+│   ├── market/                   # SymbolSearch, Heatmap, Screeners, NewsFeed
+│   ├── portfolio/                # PortfolioSummary, HoldingsTable, PerformanceMetrics
+│   ├── trading/                  # OrderPanel, TradeHistory, PnLCalculator
+│   └── ui/                       # shadcn/ui v4 (@base-ui/react) components
+├── hooks/                        # useMarketData, useRealtime, useAlertChecker, useTicker24h
 ├── lib/
-│   ├── market/               # Binance WS/REST, Yahoo stocks, indicators
-│   ├── ai/                   # 8 providers, streaming chat, market tools, system prompt
-│   └── storage.ts            # Encrypted localStorage
-├── stores/                   # Zustand (portfolio, market, AI, UI, alerts, watchlist)
-└── types/                    # TypeScript types
+│   ├── market/                   # binance.ts (WS+REST), stocks.ts (Yahoo), indicators.ts (28 funcs)
+│   └── ai/                       # 9 providers, streaming chat, 7 market tools, system prompt
+├── stores/                       # Zustand: portfolio, market, AI, UI, alerts, watchlist, trade
+└── types/                        # TypeScript: market, portfolio, AI, UI
 ```
 
 ### Data Flow
 
 ```
-Browser ─► Binance (CORS) ──► Crypto prices, klines, WebSocket
-         ─► Vercel API ──────► Yahoo Finance ──► Stock data
-         ─► /api/ai/xsmodel/chat ─► Built-in AI: 4-section Hinglish analysis + Prediction card (SSE)
-         ─► /api/ai/xsmodel ─────► Trend + Momentum + Noise prediction model
+Browser ──── Binance API (direct CORS fetch) ──── Crypto prices, klines, WebSocket tickers
+         ──── Vercel API Routes ──── Yahoo Finance ──── Stock data (1081 symbols)
+         ──── /api/ai/xsmodel/chat ──── Built-in AI: Hinglish analysis + Prediction Card (SSE)
+         ──── /api/ai/xsmodel ──────── Trend + Momentum + Noise prediction model
+         ──── localStorage (AES-GCM encrypted) ──── Portfolio, API keys, alerts, settings
 ```
+
+### Routes (14 total)
+
+| Route | Type | Description |
+|---|---|---|
+| `/` | Static | Landing page |
+| `/login` | Static | Guest login |
+| `/dashboard` | Static | Main dashboard with portfolio summary |
+| `/dashboard/ai` | Static | AI research assistant |
+| `/dashboard/portfolio` | Static | Portfolio + trade history |
+| `/dashboard/screeners` | Static | Technical & volume screeners |
+| `/dashboard/settings` | Static | User settings |
+| `/dashboard/watchlist` | Static | Watchlist management |
+| `/api/ai/xsmodel` | Dynamic | Prediction endpoint |
+| `/api/ai/xsmodel/chat` | Dynamic | SSE streaming chat |
+| `/api/market/crypto/[symbol]` | Dynamic | Crypto klines |
+| `/api/market/stocks/[symbol]` | Dynamic | Stock klines |
+| `/api/market/symbols` | Dynamic | Symbol search |
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 | Technology | Purpose |
 |---|---|
 | **Next.js 16.2.10** | React framework (App Router) |
 | **React 19** | UI library |
 | **TypeScript** | Type safety |
-| **Tailwind CSS v4** | Styling |
-| **shadcn/ui v4** | (@base-ui/react) |
-| **Zustand 5** | State management + persist |
-| **Lightweight Charts v5** | Candlestick charts |
-| **Binance API** | Crypto data (direct CORS fetch) |
-| **Yahoo Finance** | Stock data (server proxy) |
-| **Web Crypto API** | AES‑GCM encrypted storage |
+| **Tailwind CSS v4** | Utility-first styling |
+| **shadcn/ui v4** | Component library (@base-ui/react, not Radix) |
+| **Zustand 5** | State management + persist middleware |
+| **Lightweight Charts v5** | High-performance candlestick charts |
+| **Binance API** | Crypto data (direct browser CORS fetch) |
+| **Yahoo Finance** | Stock data (server-side proxy via Vercel) |
+| **Web Crypto API** | AES‑GCM encryption for API key storage |
+| **SVG** | README screenshots (built-in, no external dependencies) |
 
 ---
 
-## 🌐 Deployment
+## Indicators Library
+
+28+ technical analysis functions in `src/lib/market/indicators.ts`:
+
+**Existing:**
+- `calcSMA`, `calcEMA`, `calcRSI`, `calcMACD`, `calcBollingerBands`
+- `calcADX`, `calcOBV`, `calcAllIndicators`, `findSupportResistance`
+
+**New (v3.1):**
+- `calcATR` — Average True Range for volatility measurement
+- `detectCandlestickPatterns` — Doji, Hammer, Shooting Star, Bullish/Bearish Engulfing, Marubozu
+- `detectChartPatterns` — Breakout above resistance, Breakdown below support, Higher Lows, Lower Highs, Low Volatility Squeeze
+- `detectMarketRegime` — ADX + ATR based: trending_up, trending_down, ranging, volatile
+
+---
+
+## Development
+
+```bash
+# Install
+npm install
+
+# Development
+npm run dev
+
+# Build
+npm run build
+
+# TypeScript check
+npx tsc --noEmit
+
+# Generate README screenshots
+node scripts/generate-screenshots.mjs
+```
+
+---
+
+## Deployment
 
 Auto-deployed to Vercel from `main` branch:
 
-- **https://xsdemo.vercel.app**
-- **https://trading-simulator-nine.vercel.app**
+- **Main:** [https://xsdemo.vercel.app](https://xsdemo.vercel.app)
+- **Alternate:** [https://trading-simulator-nine.vercel.app](https://trading-simulator-nine.vercel.app)
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
-**Educational simulation only — not financial advice.** No real money. All trading is virtual. Data from Binance & Yahoo Finance for informational purposes only.
+**Educational simulation only — not financial advice.** No real money. All trading is virtual. Data from Binance & Yahoo Finance for informational purposes only. Past performance does not guarantee future results. See `src/lib/constants.ts` for the full system prompt and legal disclaimer.

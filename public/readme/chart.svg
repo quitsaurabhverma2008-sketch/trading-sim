@@ -1,0 +1,143 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#0d1117" rx="12"/>
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1f2e" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0.8"/>
+    </linearGradient>
+    <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="gr" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <linearGradient id="gy" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g1)" rx="12"/>
+  <defs><filter id="blur2"><feGaussianBlur stdDeviation="4"/></filter></defs>
+
+  <text x="40" y="50" fill="#e6edf3" font-family="sans-serif" font-size="22" font-weight="bold">BTCUSDT — Advanced Chart</text>
+  <rect x="40" y="70" width="800" height="440" fill="#111827" rx="8" stroke="#2d333b" stroke-width="1"/>
+
+  <!-- Chart grid -->
+  <line x1="80" y1="120" x2="800" y2="120" stroke="#1f2937" stroke-width="0.5"/>
+  <line x1="80" y1="180" x2="800" y2="180" stroke="#1f2937" stroke-width="0.5"/>
+  <line x1="80" y1="240" x2="800" y2="240" stroke="#1f2937" stroke-width="0.5"/>
+  <line x1="80" y1="300" x2="800" y2="300" stroke="#1f2937" stroke-width="0.5"/>
+  <line x1="80" y1="360" x2="800" y2="360" stroke="#1f2937" stroke-width="0.5"/>
+  <line x1="80" y1="420" x2="800" y2="420" stroke="#1f2937" stroke-width="0.5"/>
+
+  <!-- Candlestick simulation -->
+  <rect x="100" y="280" width="6" height="40" fill="#22c55e" rx="1"/>
+  <rect x="120" y="300" width="6" height="30" fill="#ef4444" rx="1"/>
+  <rect x="140" y="260" width="6" height="50" fill="#22c55e" rx="1"/>
+  <rect x="160" y="290" width="6" height="25" fill="#ef4444" rx="1"/>
+  <rect x="180" y="250" width="6" height="55" fill="#22c55e" rx="1"/>
+  <rect x="200" y="270" width="6" height="35" fill="#22c55e" rx="1"/>
+  <rect x="220" y="310" width="6" height="20" fill="#ef4444" rx="1"/>
+  <rect x="240" y="240" width="6" height="60" fill="#22c55e" rx="1"/>
+  <rect x="260" y="260" width="6" height="45" fill="#22c55e" rx="1"/>
+  <rect x="280" y="280" width="6" height="35" fill="#ef4444" rx="1"/>
+  <rect x="300" y="230" width="6" height="65" fill="#22c55e" rx="1"/>
+  <rect x="320" y="250" width="6" height="50" fill="#22c55e" rx="1"/>
+  <rect x="340" y="290" width="6" height="30" fill="#ef4444" rx="1"/>
+  <rect x="360" y="270" width="6" height="40" fill="#ef4444" rx="1"/>
+  <rect x="380" y="220" width="6" height="70" fill="#22c55e" rx="1"/>
+  <rect x="400" y="240" width="6" height="55" fill="#22c55e" rx="1"/>
+  <rect x="420" y="280" width="6" height="35" fill="#ef4444" rx="1"/>
+  <rect x="440" y="260" width="6" height="45" fill="#22c55e" rx="1"/>
+  <rect x="460" y="300" width="6" height="25" fill="#ef4444" rx="1"/>
+  <rect x="480" y="250" width="6" height="50" fill="#22c55e" rx="1"/>
+
+  <!-- SMA lines -->
+  <polyline points="80,380 140,360 200,340 260,320 320,300 380,280 440,270 500,260 560,250 620,240 680,230 740,220 800,210" fill="none" stroke="#eab308" stroke-width="1.5" opacity="0.8"/>
+  <polyline points="80,400 140,385 200,370 260,355 320,340 380,325 440,315 500,305 560,295 620,285 680,275 740,265 800,255" fill="none" stroke="#818cf8" stroke-width="1.5" opacity="0.8"/>
+
+  <!-- Labels -->
+  <text x="60" y="125" fill="#8b949e" font-family="monospace" font-size="10">68,500</text>
+  <text x="60" y="185" fill="#8b949e" font-family="monospace" font-size="10">67,500</text>
+  <text x="60" y="245" fill="#8b949e" font-family="monospace" font-size="10">66,500</text>
+  <text x="60" y="305" fill="#8b949e" font-family="monospace" font-size="10">65,500</text>
+  <text x="60" y="365" fill="#8b949e" font-family="monospace" font-size="10">64,500</text>
+  <text x="60" y="425" fill="#8b949e" font-family="monospace" font-size="10">63,500</text>
+
+  <!-- Volume bars -->
+  <rect x="100" y="440" width="6" height="30" fill="#22c55e" opacity="0.3" rx="1"/>
+  <rect x="120" y="450" width="6" height="20" fill="#ef4444" opacity="0.3" rx="1"/>
+  <rect x="140" y="435" width="6" height="35" fill="#22c55e" opacity="0.3" rx="1"/>
+  <rect x="160" y="455" width="6" height="15" fill="#ef4444" opacity="0.3" rx="1"/>
+  <rect x="180" y="430" width="6" height="40" fill="#22c55e" opacity="0.3" rx="1"/>
+
+  <!-- Toolbar -->
+  <rect x="40" y="518" width="800" height="40" fill="#1a1f2e" rx="8" stroke="#2d333b" stroke-width="1"/>
+  <rect x="60" y="528" width="50" height="22" fill="#1f2937" rx="4" stroke="#2d333b"/>
+  <text x="72" y="543" fill="#8b949e" font-family="monospace" font-size="11">1m</text>
+  <rect x="118" y="528" width="50" height="22" fill="#1f2937" rx="4" stroke="#2d333b"/>
+  <text x="130" y="543" fill="#8b949e" font-family="monospace" font-size="11">5m</text>
+  <rect x="176" y="528" width="50" height="22" fill="#1f2937" rx="4" stroke="#2d333b"/>
+  <text x="188" y="543" fill="#8b949e" font-family="monospace" font-size="11">15m</text>
+  <rect x="234" y="528" width="50" height="22" fill="#1f2937" rx="4" stroke="#2d333b"/>
+  <text x="246" y="543" fill="#8b949e" font-family="monospace" font-size="11">1h</text>
+  <rect x="292" y="528" width="50" height="22" fill="#2563eb" rx="4"/>
+  <text x="304" y="543" fill="#fff" font-family="monospace" font-size="11" font-weight="bold">4h</text>
+  <rect x="350" y="528" width="50" height="22" fill="#1f2937" rx="4" stroke="#2d333b"/>
+  <text x="362" y="543" fill="#8b949e" font-family="monospace" font-size="11">1d</text>
+  <rect x="408" y="528" width="50" height="22" fill="#1f2937" rx="4" stroke="#2d333b"/>
+  <text x="420" y="543" fill="#8b949e" font-family="monospace" font-size="11">1w</text>
+
+  <!-- Right sidebar - indicators panel -->
+  <rect x="860" y="70" width="300" height="488" fill="#111827" rx="8" stroke="#2d333b" stroke-width="1"/>
+  <text x="880" y="100" fill="#e6edf3" font-family="monospace" font-size="14" font-weight="bold">INDICATORS</text>
+  <line x1="880" y1="110" x2="1140" y2="110" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="880" y="135" fill="#22c55e" font-family="monospace" font-size="13">RSI (14)</text>
+  <text x="1050" y="135" fill="#22c55e" font-family="monospace" font-size="13" text-anchor="end">54.7</text>
+  <rect x="880" y="143" width="240" height="4" fill="#1f2937" rx="2"/>
+  <rect x="880" y="143" width="130" height="4" fill="#eab308" rx="2"/>
+
+  <text x="880" y="168" fill="#eab308" font-family="monospace" font-size="13">MACD</text>
+  <text x="1050" y="168" fill="#22c55e" font-family="monospace" font-size="13" text-anchor="end">+124.50</text>
+  <text x="880" y="183" fill="#8b949e" font-family="monospace" font-size="11">Signal: -45.20</text>
+  <text x="880" y="198" fill="#8b949e" font-family="monospace" font-size="11">Histogram: +169.70 (Bullish)</text>
+
+  <text x="880" y="223" fill="#818cf8" font-family="monospace" font-size="13">SMA (20)</text>
+  <text x="1050" y="223" fill="#818cf8" font-family="monospace" font-size="13" text-anchor="end">64,820</text>
+
+  <text x="880" y="248" fill="#f472b6" font-family="monospace" font-size="13">EMA (20)</text>
+  <text x="1050" y="248" fill="#f472b6" font-family="monospace" font-size="13" text-anchor="end">65,110</text>
+
+  <text x="880" y="273" fill="#34d399" font-family="monospace" font-size="13">Bollinger Bands</text>
+  <text x="880" y="290" fill="#8b949e" font-family="monospace" font-size="11">Upper: 69,840</text>
+  <text x="880" y="305" fill="#8b949e" font-family="monospace" font-size="11">Middle: 64,820</text>
+  <text x="880" y="320" fill="#8b949e" font-family="monospace" font-size="11">Lower: 59,800</text>
+
+  <line x1="880" y1="335" x2="1140" y2="335" stroke="#2d333b" stroke-width="0.5"/>
+
+  <text x="880" y="358" fill="#eab308" font-family="monospace" font-size="13">ADX (14)</text>
+  <text x="1050" y="358" fill="#eab308" font-family="monospace" font-size="13" text-anchor="end">28.4</text>
+
+  <text x="880" y="383" fill="#a78bfa" font-family="monospace" font-size="13">OBV</text>
+  <text x="1050" y="383" fill="#a78bfa" font-family="monospace" font-size="13" text-anchor="end">+2.4M</text>
+
+  <text x="880" y="408" fill="#f87171" font-family="monospace" font-size="13">ATR (14)</text>
+  <text x="1050" y="408" fill="#f87171" font-family="monospace" font-size="13" text-anchor="end">1,245</text>
+
+  <line x1="880" y1="425" x2="1140" y2="425" stroke="#2d333b" stroke-width="0.5"/>
+  <text x="880" y="450" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">MARKET REGIME</text>
+  <rect x="880" y="462" width="240" height="28" fill="#1a2e1a" rx="6"/>
+  <text x="900" y="480" fill="#22c55e" font-family="monospace" font-size="12">Trending Up (Moderate)</text>
+
+  <text x="880" y="510" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">DETECTED PATTERNS</text>
+  <text x="880" y="530" fill="#8b949e" font-family="monospace" font-size="11">• Bullish Engulfing (strength 5/5)</text>
+  <text x="880" y="545" fill="#8b949e" font-family="monospace" font-size="11">• Higher Lows Forming (strength 3/5)</text>
+
+  <rect x="0" y="627" width="1200" height="48" fill="#161b22" opacity="0.9"/>
+  <text x="24" y="657" fill="#8b949e" font-family="monospace" font-size="13">XS TRADER v2.0</text>
+  <text x="250" y="657" fill="#8b949e" font-family="monospace" font-size="13">Paper Trading Simulator</text>
+  <text x="1176" y="657" fill="#8b949e" font-family="monospace" font-size="13" text-anchor="end">$10,000 Virtual Portfolio</text>
+  </svg>

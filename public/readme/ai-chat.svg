@@ -1,0 +1,132 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#0d1117" rx="12"/>
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1f2e" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0.8"/>
+    </linearGradient>
+    <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="gr" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <linearGradient id="gy" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g1)" rx="12"/>
+  <defs><filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter></defs>
+
+  <text x="40" y="50" fill="#e6edf3" font-family="sans-serif" font-size="22" font-weight="bold">AI Research Assistant</text>
+  <text x="40" y="78" fill="#8b949e" font-family="monospace" font-size="12">9 providers · BYOK · Streaming responses · Hinglish</text>
+
+  <!-- Chat messages area -->
+  <rect x="40" y="100" width="860" height="520" fill="#111827" rx="10" stroke="#2d333b" stroke-width="1"/>
+
+  <!-- User message -->
+  <rect x="340" y="120" width="540" height="50" fill="#2563eb" rx="10" opacity="0.9"/>
+  <text x="360" y="140" fill="#93c5fd" font-family="monospace" font-size="11">You</text>
+  <text x="360" y="158" fill="#fff" font-family="sans-serif" font-size="13">BTCUSDT ke current trend ke baare mein batao bhai</text>
+
+  <!-- AI response -->
+  <rect x="60" y="190" width="580" height="200" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
+  <text x="80" y="212" fill="#22c55e" font-family="monospace" font-size="11">XS Trader AI · 1h ago</text>
+
+  <text x="80" y="235" fill="#e6edf3" font-family="sans-serif" font-size="13">Dekh bhai, BTCUSDT ka analysis karte hain:</text>
+  <text x="80" y="258" fill="#eab308" font-family="monospace" font-size="13" font-weight="bold">1. Technical Analysis</text>
+  <text x="80" y="278" fill="#e6edf3" font-family="sans-serif" font-size="13">• Current Price: $67,452 par trade kar raha hai</text>
+  <text x="80" y="298" fill="#e6edf3" font-family="sans-serif" font-size="13">• RSI 54.7 — neutral zone mein hai, na overbought na</text>
+  <text x="80" y="318" fill="#e6edf3" font-family="sans-serif" font-size="13">  oversold. Dono taraf movement possible hai.</text>
+  <text x="80" y="338" fill="#e6edf3" font-family="sans-serif" font-size="13">• MACD positive hai +124.50, signal line upar cross</text>
+  <text x="80" y="358" fill="#e6edf3" font-family="sans-serif" font-size="13">  kiya — thoda bullish momentum dikh raha hai</text>
+
+  <!-- Prediction card -->
+  <rect x="660" y="190" width="220" height="260" fill="#0d1117" rx="10" stroke="#2563eb" stroke-width="1.5"/>
+  <rect x="660" y="190" width="220" height="28" fill="#1a2332" rx="10"/>
+  <text x="680" y="210" fill="#2563eb" font-family="monospace" font-size="11" font-weight="bold">TRADE SETUP</text>
+  <text x="680" y="235" fill="#8b949e" font-family="monospace" font-size="10">Market: BTCUSDT</text>
+  <text x="680" y="252" fill="#8b949e" font-family="monospace" font-size="10">Timeframe: 4H</text>
+
+  <text x="680" y="275" fill="#eab308" font-family="monospace" font-size="11">Trend: 🟡 Neutral</text>
+
+  <text x="680" y="298" fill="#8b949e" font-family="monospace" font-size="10">Entry: $66,800 — $67,000</text>
+  <text x="680" y="315" fill="#ef4444" font-family="monospace" font-size="10">SL: $65,200</text>
+  <text x="680" y="332" fill="#22c55e" font-family="monospace" font-size="10">TP1: $68,500</text>
+  <text x="680" y="349" fill="#22c55e" font-family="monospace" font-size="10">TP2: $69,800</text>
+
+  <text x="680" y="372" fill="#8b949e" font-family="monospace" font-size="10">R:R: 1:2.5</text>
+  <text x="680" y="392" fill="#eab308" font-family="monospace" font-size="10">Confidence: 65%</text>
+
+  <line x1="680" y1="405" x2="860" y2="405" stroke="#2d333b" stroke-width="0.5"/>
+  <text x="680" y="425" fill="#8b949e" font-family="monospace" font-size="10">Verdict: Wait for breakout</text>
+  <text x="680" y="442" fill="#8b949e" font-family="monospace" font-size="10">confirmation</text>
+
+  <!-- Disclaimer -->
+  <text x="60" y="430" fill="#8b949e" font-family="monospace" font-size="11">⚠️ This is paper trading / educational simulation — not financial advice. DYOR.</text>
+
+  <!-- Provider bar -->
+  <rect x="60" y="460" width="700" height="36" fill="#1a1f2e" rx="8" stroke="#2d333b" stroke-width="1"/>
+  <text x="80" y="483" fill="#8b949e" font-family="monospace" font-size="11">AI Provider:</text>
+  <rect x="170" y="468" width="100" height="22" fill="#1f2937" rx="4"/>
+  <text x="182" y="483" fill="#e6edf3" font-family="monospace" font-size="11">OpenAI</text>
+  <text x="290" y="483" fill="#8b949e" font-family="monospace" font-size="11">Model:</text>
+  <rect x="340" y="468" width="140" height="22" fill="#1f2937" rx="4"/>
+  <text x="352" y="483" fill="#e6edf3" font-family="monospace" font-size="11">gpt-4o-mini</text>
+
+  <!-- Input box -->
+  <rect x="60" y="510" width="700" height="44" fill="#1a1f2e" rx="22" stroke="#2d333b" stroke-width="1"/>
+  <text x="90" y="536" fill="#8b949e" font-family="monospace" font-size="13">Ask about any market...</text>
+  <circle cx="730" cy="532" r="14" fill="#2563eb"/>
+  <text x="730" y="537" fill="#fff" font-family="monospace" font-size="12" text-anchor="middle">→</text>
+
+  <rect x="920" y="100" width="240" height="520" fill="#111827" rx="10" stroke="#2d333b" stroke-width="1"/>
+  <text x="940" y="125" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">MARKET CONTEXT</text>
+  <line x1="940" y1="135" x2="1140" y2="135" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="940" y="158" fill="#8b949e" font-family="monospace" font-size="11">Active Symbol</text>
+  <text x="940" y="175" fill="#e6edf3" font-family="monospace" font-size="14" font-weight="bold">BTCUSDT</text>
+  <text x="1060" y="175" fill="#22c55e" font-family="monospace" font-size="14">+2.34%</text>
+
+  <text x="940" y="200" fill="#8b949e" font-family="monospace" font-size="11">Price</text>
+  <text x="940" y="218" fill="#e6edf3" font-family="monospace" font-size="16" font-weight="bold">$67,452.80</text>
+
+  <line x1="940" y1="230" x2="1140" y2="230" stroke="#2d333b" stroke-width="0.5"/>
+
+  <text x="940" y="253" fill="#8b949e" font-family="monospace" font-size="11">AI Providers</text>
+  <rect x="940" y="275" width="200" height="20" fill="#1a2332" rx="4"/>
+    <circle cx="950" cy="285" r="4" fill="#22c55e"/>
+    <text x="964" y="289" fill="#e6edf3" font-family="monospace" font-size="11">OpenAI</text>
+<rect x="940" y="299" width="200" height="20" fill="transparent" rx="4"/>
+    <circle cx="950" cy="309" r="4" fill="#2d333b"/>
+    <text x="964" y="313" fill="#8b949e" font-family="monospace" font-size="11">Anthropic</text>
+<rect x="940" y="323" width="200" height="20" fill="transparent" rx="4"/>
+    <circle cx="950" cy="333" r="4" fill="#2d333b"/>
+    <text x="964" y="337" fill="#8b949e" font-family="monospace" font-size="11">Google</text>
+<rect x="940" y="347" width="200" height="20" fill="transparent" rx="4"/>
+    <circle cx="950" cy="357" r="4" fill="#2d333b"/>
+    <text x="964" y="361" fill="#8b949e" font-family="monospace" font-size="11">Groq</text>
+<rect x="940" y="371" width="200" height="20" fill="transparent" rx="4"/>
+    <circle cx="950" cy="381" r="4" fill="#2d333b"/>
+    <text x="964" y="385" fill="#8b949e" font-family="monospace" font-size="11">OpenRouter</text>
+<rect x="940" y="395" width="200" height="20" fill="transparent" rx="4"/>
+    <circle cx="950" cy="405" r="4" fill="#2d333b"/>
+    <text x="964" y="409" fill="#8b949e" font-family="monospace" font-size="11">Ollama</text>
+<rect x="940" y="419" width="200" height="20" fill="transparent" rx="4"/>
+    <circle cx="950" cy="429" r="4" fill="#2d333b"/>
+    <text x="964" y="433" fill="#8b949e" font-family="monospace" font-size="11">NVIDIA</text>
+<rect x="940" y="443" width="200" height="20" fill="transparent" rx="4"/>
+    <circle cx="950" cy="453" r="4" fill="#2d333b"/>
+    <text x="964" y="457" fill="#8b949e" font-family="monospace" font-size="11">DeepSeek</text>
+<rect x="940" y="467" width="200" height="20" fill="transparent" rx="4"/>
+    <circle cx="950" cy="477" r="4" fill="#2d333b"/>
+    <text x="964" y="481" fill="#8b949e" font-family="monospace" font-size="11">xsmodel</text>
+
+  <rect x="0" y="627" width="1200" height="48" fill="#161b22" opacity="0.9"/>
+  <text x="24" y="657" fill="#8b949e" font-family="monospace" font-size="13">XS TRADER v2.0</text>
+  <text x="250" y="657" fill="#8b949e" font-family="monospace" font-size="13">Paper Trading Simulator</text>
+  <text x="1176" y="657" fill="#8b949e" font-family="monospace" font-size="13" text-anchor="end">$10,000 Virtual Portfolio</text>
+  </svg>

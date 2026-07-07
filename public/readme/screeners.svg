@@ -1,0 +1,153 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#0d1117" rx="12"/>
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1f2e" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0.8"/>
+    </linearGradient>
+    <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="gr" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <linearGradient id="gy" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g1)" rx="12"/>
+  <text x="40" y="50" fill="#e6edf3" font-family="sans-serif" font-size="22" font-weight="bold">Market Screeners</text>
+  <text x="40" y="78" fill="#8b949e" font-family="monospace" font-size="12">Technical Screener · Volume Screener · Gainers/Losers</text>
+
+  <!-- Tabs -->
+  <rect x="40" y="100" width="140" height="36" fill="#2563eb" rx="8"/>
+  <text x="65" y="122" fill="#fff" font-family="monospace" font-size="13" font-weight="bold">Technical</text>
+  <rect x="188" y="100" width="140" height="36" fill="#1a1f2e" rx="8" stroke="#2d333b"/>
+  <text x="213" y="122" fill="#8b949e" font-family="monospace" font-size="13">Volume</text>
+  <rect x="336" y="100" width="150" height="36" fill="#1a1f2e" rx="8" stroke="#2d333b"/>
+  <text x="366" y="122" fill="#8b949e" font-family="monospace" font-size="13">Gainers/Losers</text>
+
+  <rect x="40" y="145" width="1120" height="480" fill="#111827" rx="10" stroke="#2d333b" stroke-width="1"/>
+
+  <!-- Table header -->
+  <rect x="40" y="145" width="1120" height="36" fill="#1a1f2e" rx="10"/>
+  <text x="70" y="168" fill="#8b949e" font-family="monospace" font-size="12">#</text>
+  <text x="130" y="168" fill="#8b949e" font-family="monospace" font-size="12">SYMBOL</text>
+  <text x="280" y="168" fill="#8b949e" font-family="monospace" font-size="12">PRICE</text>
+  <text x="410" y="168" fill="#8b949e" font-family="monospace" font-size="12">CHANGE 24H</text>
+  <text x="560" y="168" fill="#8b949e" font-family="monospace" font-size="12">RSI</text>
+  <text x="670" y="168" fill="#8b949e" font-family="monospace" font-size="12">MACD</text>
+  <text x="800" y="168" fill="#8b949e" font-family="monospace" font-size="12">VOLUME</text>
+  <text x="950" y="168" fill="#8b949e" font-family="monospace" font-size="12">SIGNAL</text>
+  <text x="1090" y="168" fill="#8b949e" font-family="monospace" font-size="12">REGIME</text>
+  <line x1="60" y1="180" x2="1140" y2="180" stroke="#2d333b" stroke-width="0.5"/>
+
+  <line x1="60" y1="224" x2="1140" y2="224" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="214" fill="#8b949e" font-family="monospace" font-size="12">1</text>
+    <text x="130" y="214" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">BTCUSDT</text>
+    <text x="280" y="214" fill="#e6edf3" font-family="monospace" font-size="12">$67,452</text>
+    <text x="410" y="214" fill="#22c55e" font-family="monospace" font-size="12">+2.34%</text>
+    <text x="560" y="214" fill="#eab308" font-family="monospace" font-size="12">54.7</text>
+    <text x="670" y="214" fill="#22c55e" font-family="monospace" font-size="12">+124.5</text>
+    <text x="800" y="214" fill="#e6edf3" font-family="monospace" font-size="12">28.4B</text>
+    <text x="950" y="214" fill="#a78bfa" font-family="monospace" font-size="12">Neutral</text>
+    <text x="1090" y="214" fill="#22c55e" font-family="monospace" font-size="12">Trending Up</text>
+<line x1="60" y1="262" x2="1140" y2="262" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="252" fill="#8b949e" font-family="monospace" font-size="12">2</text>
+    <text x="130" y="252" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">ETHUSDT</text>
+    <text x="280" y="252" fill="#e6edf3" font-family="monospace" font-size="12">$3,045</text>
+    <text x="410" y="252" fill="#ef4444" font-family="monospace" font-size="12">-1.20%</text>
+    <text x="560" y="252" fill="#eab308" font-family="monospace" font-size="12">42.3</text>
+    <text x="670" y="252" fill="#ef4444" font-family="monospace" font-size="12">-45.2</text>
+    <text x="800" y="252" fill="#e6edf3" font-family="monospace" font-size="12">15.2B</text>
+    <text x="950" y="252" fill="#a78bfa" font-family="monospace" font-size="12">Oversold</text>
+    <text x="1090" y="252" fill="#eab308" font-family="monospace" font-size="12">Ranging</text>
+<line x1="60" y1="300" x2="1140" y2="300" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="290" fill="#8b949e" font-family="monospace" font-size="12">3</text>
+    <text x="130" y="290" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">SOLUSDT</text>
+    <text x="280" y="290" fill="#e6edf3" font-family="monospace" font-size="12">$188.70</text>
+    <text x="410" y="290" fill="#22c55e" font-family="monospace" font-size="12">+5.68%</text>
+    <text x="560" y="290" fill="#eab308" font-family="monospace" font-size="12">62.1</text>
+    <text x="670" y="290" fill="#22c55e" font-family="monospace" font-size="12">+89.3</text>
+    <text x="800" y="290" fill="#e6edf3" font-family="monospace" font-size="12">4.8B</text>
+    <text x="950" y="290" fill="#a78bfa" font-family="monospace" font-size="12">Bullish</text>
+    <text x="1090" y="290" fill="#22c55e" font-family="monospace" font-size="12">Trending Up</text>
+<line x1="60" y1="338" x2="1140" y2="338" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="328" fill="#8b949e" font-family="monospace" font-size="12">4</text>
+    <text x="130" y="328" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">BNBUSDT</text>
+    <text x="280" y="328" fill="#e6edf3" font-family="monospace" font-size="12">$578.20</text>
+    <text x="410" y="328" fill="#22c55e" font-family="monospace" font-size="12">+0.85%</text>
+    <text x="560" y="328" fill="#eab308" font-family="monospace" font-size="12">48.9</text>
+    <text x="670" y="328" fill="#22c55e" font-family="monospace" font-size="12">+12.4</text>
+    <text x="800" y="328" fill="#e6edf3" font-family="monospace" font-size="12">1.2B</text>
+    <text x="950" y="328" fill="#a78bfa" font-family="monospace" font-size="12">Neutral</text>
+    <text x="1090" y="328" fill="#eab308" font-family="monospace" font-size="12">Ranging</text>
+<line x1="60" y1="376" x2="1140" y2="376" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="366" fill="#8b949e" font-family="monospace" font-size="12">5</text>
+    <text x="130" y="366" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">XRPUSDT</text>
+    <text x="280" y="366" fill="#e6edf3" font-family="monospace" font-size="12">$0.5245</text>
+    <text x="410" y="366" fill="#ef4444" font-family="monospace" font-size="12">-0.32%</text>
+    <text x="560" y="366" fill="#eab308" font-family="monospace" font-size="12">45.6</text>
+    <text x="670" y="366" fill="#ef4444" font-family="monospace" font-size="12">-3.8</text>
+    <text x="800" y="366" fill="#e6edf3" font-family="monospace" font-size="12">2.1B</text>
+    <text x="950" y="366" fill="#a78bfa" font-family="monospace" font-size="12">Neutral</text>
+    <text x="1090" y="366" fill="#eab308" font-family="monospace" font-size="12">Ranging</text>
+<line x1="60" y1="414" x2="1140" y2="414" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="404" fill="#8b949e" font-family="monospace" font-size="12">6</text>
+    <text x="130" y="404" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">ADAUSDT</text>
+    <text x="280" y="404" fill="#e6edf3" font-family="monospace" font-size="12">$0.4580</text>
+    <text x="410" y="404" fill="#22c55e" font-family="monospace" font-size="12">+1.75%</text>
+    <text x="560" y="404" fill="#eab308" font-family="monospace" font-size="12">52.3</text>
+    <text x="670" y="404" fill="#22c55e" font-family="monospace" font-size="12">+8.2</text>
+    <text x="800" y="404" fill="#e6edf3" font-family="monospace" font-size="12">0.9B</text>
+    <text x="950" y="404" fill="#a78bfa" font-family="monospace" font-size="12">Neutral</text>
+    <text x="1090" y="404" fill="#22c55e" font-family="monospace" font-size="12">Trending Up</text>
+<line x1="60" y1="452" x2="1140" y2="452" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="442" fill="#8b949e" font-family="monospace" font-size="12">7</text>
+    <text x="130" y="442" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">DOGEUSDT</text>
+    <text x="280" y="442" fill="#e6edf3" font-family="monospace" font-size="12">$0.1245</text>
+    <text x="410" y="442" fill="#ef4444" font-family="monospace" font-size="12">-2.10%</text>
+    <text x="560" y="442" fill="#eab308" font-family="monospace" font-size="12">38.7</text>
+    <text x="670" y="442" fill="#ef4444" font-family="monospace" font-size="12">-15.6</text>
+    <text x="800" y="442" fill="#e6edf3" font-family="monospace" font-size="12">1.8B</text>
+    <text x="950" y="442" fill="#a78bfa" font-family="monospace" font-size="12">Oversold</text>
+    <text x="1090" y="442" fill="#ef4444" font-family="monospace" font-size="12">Trending Down</text>
+<line x1="60" y1="490" x2="1140" y2="490" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="480" fill="#8b949e" font-family="monospace" font-size="12">8</text>
+    <text x="130" y="480" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">DOTUSDT</text>
+    <text x="280" y="480" fill="#e6edf3" font-family="monospace" font-size="12">$7.82</text>
+    <text x="410" y="480" fill="#22c55e" font-family="monospace" font-size="12">+3.45%</text>
+    <text x="560" y="480" fill="#eab308" font-family="monospace" font-size="12">58.2</text>
+    <text x="670" y="480" fill="#22c55e" font-family="monospace" font-size="12">+22.1</text>
+    <text x="800" y="480" fill="#e6edf3" font-family="monospace" font-size="12">0.5B</text>
+    <text x="950" y="480" fill="#a78bfa" font-family="monospace" font-size="12">Bullish</text>
+    <text x="1090" y="480" fill="#22c55e" font-family="monospace" font-size="12">Trending Up</text>
+<line x1="60" y1="528" x2="1140" y2="528" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="518" fill="#8b949e" font-family="monospace" font-size="12">9</text>
+    <text x="130" y="518" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">AVAXUSDT</text>
+    <text x="280" y="518" fill="#e6edf3" font-family="monospace" font-size="12">$35.60</text>
+    <text x="410" y="518" fill="#22c55e" font-family="monospace" font-size="12">+1.22%</text>
+    <text x="560" y="518" fill="#eab308" font-family="monospace" font-size="12">51.4</text>
+    <text x="670" y="518" fill="#22c55e" font-family="monospace" font-size="12">+5.7</text>
+    <text x="800" y="518" fill="#e6edf3" font-family="monospace" font-size="12">0.7B</text>
+    <text x="950" y="518" fill="#a78bfa" font-family="monospace" font-size="12">Neutral</text>
+    <text x="1090" y="518" fill="#eab308" font-family="monospace" font-size="12">Ranging</text>
+<line x1="60" y1="566" x2="1140" y2="566" stroke="#1f2937" stroke-width="0.3"/>
+    <text x="70" y="556" fill="#8b949e" font-family="monospace" font-size="12">10</text>
+    <text x="130" y="556" fill="#e6edf3" font-family="monospace" font-size="12" font-weight="bold">LINKUSDT</text>
+    <text x="280" y="556" fill="#e6edf3" font-family="monospace" font-size="12">$14.85</text>
+    <text x="410" y="556" fill="#ef4444" font-family="monospace" font-size="12">-0.95%</text>
+    <text x="560" y="556" fill="#eab308" font-family="monospace" font-size="12">44.8</text>
+    <text x="670" y="556" fill="#ef4444" font-family="monospace" font-size="12">-4.2</text>
+    <text x="800" y="556" fill="#e6edf3" font-family="monospace" font-size="12">0.3B</text>
+    <text x="950" y="556" fill="#a78bfa" font-family="monospace" font-size="12">Neutral</text>
+    <text x="1090" y="556" fill="#eab308" font-family="monospace" font-size="12">Ranging</text>
+
+  <rect x="0" y="627" width="1200" height="48" fill="#161b22" opacity="0.9"/>
+  <text x="24" y="657" fill="#8b949e" font-family="monospace" font-size="13">XS TRADER v2.0</text>
+  <text x="250" y="657" fill="#8b949e" font-family="monospace" font-size="13">Paper Trading Simulator</text>
+  <text x="1176" y="657" fill="#8b949e" font-family="monospace" font-size="13" text-anchor="end">$10,000 Virtual Portfolio</text>
+  </svg>

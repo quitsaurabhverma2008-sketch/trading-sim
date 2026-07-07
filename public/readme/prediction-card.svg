@@ -1,0 +1,106 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#0d1117" rx="12"/>
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1f2e" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0.8"/>
+    </linearGradient>
+    <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="gr" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <linearGradient id="gy" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g1)" rx="12"/>
+  <defs><filter id="blur5"><feGaussianBlur stdDeviation="8"/></filter></defs>
+  <circle cx="300" cy="200" r="100" fill="#2563eb" opacity="0.15" filter="url(#blur)"/>
+  <circle cx="800" cy="300" r="80" fill="#22c55e" opacity="0.15" filter="url(#blur)"/>
+
+  <text x="40" y="50" fill="#e6edf3" font-family="sans-serif" font-size="22" font-weight="bold">AI Prediction Card</text>
+  <text x="40" y="78" fill="#8b949e" font-family="monospace" font-size="12">Every analysis ends with a structured trade setup card</text>
+
+  <!-- Main card -->
+  <rect x="80" y="105" width="540" height="520" fill="#111827" rx="16" stroke="#2563eb" stroke-width="2"/>
+  <rect x="80" y="105" width="540" height="45" fill="#1a2332" rx="16"/>
+  <rect x="80" y="130" width="540" height="20" fill="#1a2332"/>
+  <text x="120" y="135" fill="#2563eb" font-family="monospace" font-size="14" font-weight="bold">TRADE SETUP / PREDICTION CARD</text>
+
+  <text x="120" y="175" fill="#8b949e" font-family="monospace" font-size="12">Market</text>
+  <text x="250" y="175" fill="#e6edf3" font-family="monospace" font-size="14">BTCUSDT</text>
+  <text x="120" y="200" fill="#8b949e" font-family="monospace" font-size="12">Exchange</text>
+  <text x="250" y="200" fill="#e6edf3" font-family="monospace" font-size="14">Binance</text>
+  <text x="120" y="225" fill="#8b949e" font-family="monospace" font-size="12">Timeframe</text>
+  <text x="250" y="225" fill="#e6edf3" font-family="monospace" font-size="14">4H</text>
+
+  <line x1="120" y1="245" x2="580" y2="245" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="120" y="275" fill="#8b949e" font-family="monospace" font-size="12">Trend</text>
+  <rect x="250" y="260" width="100" height="24" fill="#3a2e00" rx="12"/>
+  <text x="265" y="277" fill="#eab308" font-family="monospace" font-size="12">🟡 Neutral</text>
+
+  <line x1="120" y1="300" x2="580" y2="300" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="120" y="325" fill="#8b949e" font-family="monospace" font-size="12" font-weight="bold">Indicators</text>
+  <text x="120" y="350" fill="#e6edf3" font-family="monospace" font-size="12">RSI: 54.7 (Neutral sentiment)</text>
+  <text x="120" y="372" fill="#e6edf3" font-family="monospace" font-size="12">MACD: +124.50 (Bullish)</text>
+  <text x="120" y="394" fill="#e6edf3" font-family="monospace" font-size="12">20 SMA: Price Above ($64,820)</text>
+  <text x="120" y="416" fill="#e6edf3" font-family="monospace" font-size="12">Key Level: $66,800 (Support)</text>
+
+  <text x="120" y="445" fill="#8b949e" font-family="monospace" font-size="12">Market Structure</text>
+  <text x="270" y="445" fill="#e6edf3" font-family="monospace" font-size="12">Higher High — Higher Low (Uptrend)</text>
+
+  <text x="120" y="472" fill="#8b949e" font-family="monospace" font-size="12">Key Levels</text>
+  <text x="270" y="472" fill="#22c55e" font-family="monospace" font-size="12">Support: $65,200</text>
+  <text x="420" y="472" fill="#ef4444" font-family="monospace" font-size="12">Resistance: $68,500</text>
+
+  <line x1="120" y1="490" x2="580" y2="490" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="120" y="515" fill="#8b949e" font-family="monospace" font-size="12">Trading Plan</text>
+  <text x="120" y="538" fill="#e6edf3" font-family="monospace" font-size="12">Entry: $66,800 — $67,000</text>
+  <text x="120" y="558" fill="#ef4444" font-family="monospace" font-size="12">Stop Loss: $65,200</text>
+  <text x="120" y="578" fill="#22c55e" font-family="monospace" font-size="12">Take Profit 1: $68,500</text>
+  <text x="120" y="598" fill="#22c55e" font-family="monospace" font-size="12">Take Profit 2: $69,800</text>
+
+  <!-- Right side details -->
+  <rect x="680" y="105" width="480" height="520" fill="#111827" rx="16" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="720" y="145" fill="#8b949e" font-family="monospace" font-size="12">RISK:REWARD</text>
+  <rect x="720" y="155" width="200" height="40" fill="#1a2e1a" rx="8"/>
+  <text x="760" y="182" fill="#22c55e" font-family="monospace" font-size="24" font-weight="bold">1:2.5</text>
+
+  <text x="720" y="225" fill="#8b949e" font-family="monospace" font-size="12">CONFIDENCE</text>
+  <rect x="720" y="240" width="400" height="16" fill="#1f2937" rx="8"/>
+  <rect x="720" y="240" width="260" height="16" fill="#eab308" rx="8"/>
+  <text x="760" y="275" fill="#eab308" font-family="monospace" font-size="16" font-weight="bold">65%</text>
+
+  <line x1="720" y1="300" x2="1120" y2="300" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="720" y="330" fill="#8b949e" font-family="monospace" font-size="12">REASON</text>
+  <text x="720" y="355" fill="#e6edf3" font-family="sans-serif" font-size="12">Price 20 SMA ke upar hai, MACD positive hai,</text>
+  <text x="720" y="375" fill="#e6edf3" font-family="sans-serif" font-size="12">RSI neutral zone mein hai. Support $65,200</text>
+  <text x="720" y="395" fill="#e6edf3" font-family="sans-serif" font-size="12">hold kar raha hai. Breakout confirmation</text>
+  <text x="720" y="415" fill="#e6edf3" font-family="sans-serif" font-size="12">ke baad long entry logical lagti hai.</text>
+
+  <line x1="720" y1="435" x2="1120" y2="435" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="720" y="465" fill="#8b949e" font-family="monospace" font-size="12">VERDICT</text>
+  <rect x="720" y="478" width="400" height="36" fill="#1a2332" rx="8" stroke="#2563eb" stroke-width="1"/>
+  <text x="740" y="500" fill="#2563eb" font-family="sans-serif" font-size="13">Wait for confirmation before entering long</text>
+
+  <line x1="720" y1="530" x2="1120" y2="530" stroke="#2d333b" stroke-width="1"/>
+
+  <text x="720" y="555" fill="#8b949e" font-family="monospace" font-size="11">⚠️ This is paper trading / educational</text>
+  <text x="720" y="575" fill="#8b949e" font-family="monospace" font-size="11">simulation — not financial advice. DYOR.</text>
+
+  <rect x="0" y="627" width="1200" height="48" fill="#161b22" opacity="0.9"/>
+  <text x="24" y="657" fill="#8b949e" font-family="monospace" font-size="13">XS TRADER v2.0</text>
+  <text x="250" y="657" fill="#8b949e" font-family="monospace" font-size="13">Paper Trading Simulator</text>
+  <text x="1176" y="657" fill="#8b949e" font-family="monospace" font-size="13" text-anchor="end">$10,000 Virtual Portfolio</text>
+  </svg>
