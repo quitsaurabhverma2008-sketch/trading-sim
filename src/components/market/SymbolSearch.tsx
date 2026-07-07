@@ -18,7 +18,6 @@ export function SymbolSearch() {
   const { activeSymbol, setActiveSymbol, realtimePrices, tickers, activeAssetType } = useMarketStore()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
-  const [results, setResults] = useState<SymbolResult[]>([])
   const [loading, setLoading] = useState(false)
   const [allItems, setAllItems] = useState<SymbolResult[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
@@ -57,8 +56,11 @@ export function SymbolSearch() {
         (s) =>
           s.symbol.toLowerCase().includes(query.toLowerCase()) ||
           s.name.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 50)
-    : allItems.slice(0, 50)
+      ).slice(0, 500)
+    : allItems.slice(0, 500)
+
+  const cryptoItems = filtered.filter((s) => s.type === "crypto")
+  const stockItems = filtered.filter((s) => s.type === "stock")
 
   const selectSymbol = useCallback(
     (symbol: string, type: "crypto" | "stock") => {
@@ -68,6 +70,53 @@ export function SymbolSearch() {
     },
     [setActiveSymbol]
   )
+
+  function renderRow(s: SymbolResult) {
+    const price = realtimePrices[s.symbol]
+    const ticker = tickers[s.symbol]
+    const isSelected = s.symbol === activeSymbol
+    return (
+      <button
+        key={s.symbol}
+        onClick={() => selectSymbol(s.symbol, s.type)}
+        className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-accent transition-colors ${
+          isSelected ? "bg-accent" : ""
+        }`}
+      >
+        <div className="shrink-0">
+          {s.type === "crypto" ? (
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
+          ) : (
+            <BarChart3 className="h-4 w-4 text-blue-500" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium truncate">
+            {s.symbol}
+          </div>
+          <div className="text-xs text-muted-foreground truncate">
+            {s.name}
+          </div>
+        </div>
+        <div className="text-right shrink-0">
+          {price ? (
+            <>
+              <div className="text-sm font-mono font-medium">
+                {formatPrice(price)}
+              </div>
+              {ticker && (
+                <div className={`text-xs font-mono ${ticker.priceChangePercent >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+                  {ticker.priceChangePercent >= 0 ? "+" : ""}{ticker.priceChangePercent.toFixed(2)}%
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-xs text-muted-foreground">—</div>
+          )}
+        </div>
+      </button>
+    )
+  }
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -117,58 +166,30 @@ export function SymbolSearch() {
       </div>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-80 bg-popover border border-border rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1 w-80 bg-popover border border-border rounded-lg shadow-xl z-50 max-h-[70vh] overflow-y-auto">
           {loading ? (
             <div className="p-3 text-xs text-muted-foreground">Loading...</div>
           ) : filtered.length === 0 ? (
             <div className="p-3 text-xs text-muted-foreground">No results</div>
           ) : (
-            filtered.map((s) => {
-              const price = realtimePrices[s.symbol]
-              const ticker = tickers[s.symbol]
-              const isSelected = s.symbol === activeSymbol
-              return (
-                <button
-                  key={s.symbol}
-                  onClick={() => selectSymbol(s.symbol, s.type)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-accent transition-colors ${
-                    isSelected ? "bg-accent" : ""
-                  }`}
-                >
-                  <div className="shrink-0">
-                    {s.type === "crypto" ? (
-                      <TrendingUp className="h-4 w-4 text-emerald-500" />
-                    ) : (
-                      <BarChart3 className="h-4 w-4 text-blue-500" />
-                    )}
+            <>
+              {cryptoItems.length > 0 && (
+                <>
+                  <div className="sticky top-0 bg-popover px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b">
+                    Crypto
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">
-                      {s.symbol}
-                    </div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {s.name}
-                    </div>
+                  {cryptoItems.map((s) => renderRow(s))}
+                </>
+              )}
+              {stockItems.length > 0 && (
+                <>
+                  <div className="sticky top-0 bg-popover px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b">
+                    Stocks
                   </div>
-                  <div className="text-right shrink-0">
-                    {price ? (
-                      <>
-                        <div className="text-sm font-mono font-medium">
-                          {formatPrice(price)}
-                        </div>
-                        {ticker && (
-                          <div className={`text-xs font-mono ${ticker.priceChangePercent >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-                            {ticker.priceChangePercent >= 0 ? "+" : ""}{ticker.priceChangePercent.toFixed(2)}%
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="text-xs text-muted-foreground">—</div>
-                    )}
-                  </div>
-                </button>
-              )
-            })
+                  {stockItems.map((s) => renderRow(s))}
+                </>
+              )}
+            </>
           )}
         </div>
       )}

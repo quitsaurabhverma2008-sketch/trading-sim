@@ -86,7 +86,8 @@ export function useMarketData(
         setIndicators(ind)
         setError(null)
       } else if (candles.length === 0) {
-        setError(`No data for ${normalSymbol}. Symbol may not exist or data source unavailable.`)
+        const src = type === "crypto" ? "Binance" : "Yahoo Finance"
+        setError(`No data for ${symbol} (${normalSymbol}) on ${src}. Try a different asset.`)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch market data")
