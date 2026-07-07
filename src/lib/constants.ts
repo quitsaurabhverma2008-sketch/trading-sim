@@ -385,6 +385,17 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
     requiresKey: true,
   },
   {
+    id: "deepseek",
+    name: "DeepSeek",
+    models: [
+      { id: "deepseek-chat", name: "DeepSeek V3 Chat", contextWindow: 65536, provider: "deepseek" },
+      { id: "deepseek-reasoner", name: "DeepSeek R1 Reasoner", contextWindow: 65536, provider: "deepseek" },
+    ],
+    apiKeyFormat: /^sk-/,
+    endpoint: "https://api.deepseek.com/v1",
+    requiresKey: true,
+  },
+  {
     id: "xsmodel",
     name: "Built-in AI (Technical Analysis)",
     models: [

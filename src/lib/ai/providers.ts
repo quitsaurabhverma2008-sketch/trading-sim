@@ -174,6 +174,17 @@ function ollamaHandler(): ProviderHandler {
   }
 }
 
+function deepseekHandler(apiKey: string): ProviderHandler {
+  const h = openAIHandler(apiKey)
+  return {
+    ...h,
+    buildRequest: (req) => {
+      const r = h.buildRequest(req)
+      return { ...r, url: "https://api.deepseek.com/v1/chat/completions" }
+    },
+  }
+}
+
 function xsmodelHandler(_apiKey: string): ProviderHandler {
   return {
     buildRequest: ({ model, messages, systemPrompt, temperature, stream }) => {
@@ -208,6 +219,7 @@ export function getProviderHandler(providerId: AIProviderId, apiKey: string): Pr
     case "groq": return groqHandler(apiKey)
     case "openrouter": return openRouterHandler(apiKey)
     case "nvidia": return nvidiaHandler(apiKey)
+    case "deepseek": return deepseekHandler(apiKey)
     case "ollama": return ollamaHandler()
     case "xsmodel": return xsmodelHandler(apiKey)
     default: return openAIHandler(apiKey)

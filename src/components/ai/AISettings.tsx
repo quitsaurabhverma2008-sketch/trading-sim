@@ -122,7 +122,9 @@ export function AISettings() {
                         ? "AIza..."
                         : providerState.provider === "groq"
                           ? "gsk_..."
-                          : "sk-..."
+                          : providerState.provider === "deepseek"
+                            ? "sk-..."
+                            : "sk-..."
                 }
                 className="h-9 text-sm pr-8"
               />
