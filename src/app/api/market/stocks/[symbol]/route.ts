@@ -6,11 +6,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const { searchParams } = new URL(request.url)
   const type = searchParams.get("type") ?? "klines"
   const timeframe = searchParams.get("timeframe") ?? "1h"
+  const limit = searchParams.get("limit")
 
   try {
     switch (type) {
       case "klines": {
-        const candles = await fetchStockCandles(symbol.toUpperCase(), timeframe)
+        let candles = await fetchStockCandles(symbol.toUpperCase(), timeframe)
+        if (limit) {
+          const n = parseInt(limit)
+          if (n > 0) candles = candles.slice(-n)
+        }
         return NextResponse.json({ symbol, timeframe, candles })
       }
       case "quote": {

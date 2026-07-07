@@ -32,7 +32,7 @@ export function TradingChart() {
   const bbLowerRef = useRef<ISeriesApi<"Line"> | null>(null)
 
   const { activeSymbol, activeAssetType, activeTimeframe } = useMarketStore()
-  const { candles, indicators, loading, error } = useMarketData(activeSymbol, activeAssetType ?? "crypto", activeTimeframe)
+  const { candles, indicators, loading, error } = useMarketData(activeSymbol, activeAssetType, activeTimeframe)
   const [chartStyle, setChartStyle] = useState<ChartStyle>("candle")
   const [showSMA, setShowSMA] = useState(true)
   const [showEMA, setShowEMA] = useState(true)

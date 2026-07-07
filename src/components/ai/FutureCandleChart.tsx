@@ -1,6 +1,5 @@
 "use client"
 
-import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 
 interface PredictionData {
@@ -26,33 +25,6 @@ interface FutureCandleChartProps {
 export function FutureCandleChart({ data, compact }: FutureCandleChartProps) {
   const isUp = data.direction === "bullish"
   const isNeutral = data.direction === "neutral"
-
-  const { chartSvg, candleTop, candleBottom, wickTop, wickBottom } = useMemo(() => {
-    const pad = 0.15
-    const maxP = Math.max(data.predictedHigh, data.currentPrice) * (1 + pad)
-    const minP = Math.min(data.predictedLow, data.currentPrice) * (1 - pad)
-    const range = maxP - minP || 1
-    const totalH = compact ? 160 : 240
-    const wickH = totalH * 0.85
-
-    function toY(price: number) {
-      return ((maxP - price) / range) * wickH + (totalH - wickH) / 2
-    }
-
-    const candleW = compact ? 40 : 56
-    const bodyH = Math.abs(toY(data.predictedOpen) - toY(data.predictedClose))
-    const bodyTop = Math.min(toY(data.predictedOpen), toY(data.predictedClose))
-    const bodyBottom = bodyTop + bodyH
-    const wTop = toY(data.predictedHigh)
-    const wBottom = toY(data.predictedLow)
-    const midX = 60
-    const currentY = toY(data.currentPrice)
-
-    const color = isNeutral ? "#a855f7" : isUp ? "#22c55e" : "#ef4444"
-    const currentBarY = totalH - 40
-
-    return { chartSvg: null, candleTop: bodyTop, candleBottom: bodyBottom, wickTop: wTop, wickBottom: wBottom }
-  }, [data, compact])
 
   const h = compact ? 200 : 300
   const w = compact ? 280 : 380

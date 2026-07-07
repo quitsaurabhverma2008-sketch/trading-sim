@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback } from "react"
 import { useMarketStore } from "@/stores/marketStore"
 import { usePortfolioStore } from "@/stores/portfolioStore"
 import { createBinanceWS, parseBinanceTicker, fetchAllTickers } from "@/lib/market/binance"
+import type { Ticker24h } from "@/types"
 
 export function useRealtime(symbols: string[]) {
   const wsRef = useRef<WebSocket | null>(null)
@@ -103,7 +104,7 @@ export function useTicker24h(symbols: string[]) {
           }
         }
         if (Object.keys(filtered).length > 0) {
-          setTickers(filtered as Record<string, never>)
+          setTickers(filtered as Record<string, Ticker24h>)
         }
       } catch {
       }

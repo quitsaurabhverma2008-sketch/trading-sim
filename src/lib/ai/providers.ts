@@ -133,7 +133,7 @@ function openRouterHandler(apiKey: string): ProviderHandler {
       return {
         ...r,
         url: "https://openrouter.ai/api/v1/chat/completions",
-        headers: { ...r.headers, "HTTP-Referer": window.location.origin, "X-Title": "TradeSim" },
+        headers: { ...r.headers, "HTTP-Referer": typeof window !== "undefined" ? window.location.origin : "", "X-Title": "TradeSim" },
       }
     },
   }

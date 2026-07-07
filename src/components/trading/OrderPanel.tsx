@@ -12,6 +12,7 @@ import { useUIStore } from "@/stores/uiStore"
 import { formatPrice, formatCurrency } from "@/lib/utils"
 import { toast } from "sonner"
 import type { OrderSide, OrderType } from "@/types"
+import { cn } from "@/lib/utils"
 
 export function OrderPanel() {
   const [side, setSide] = useState<OrderSide>("buy")
@@ -202,5 +203,72 @@ export function OrderPanel() {
         </Button>
       </CardContent>
     </Card>
+  )
+}
+
+export function QuickTradeBar() {
+  const { activeSymbol, realtimePrices } = useMarketStore()
+  const { cashBalance, executeOrder, getPosition } = usePortfolioStore()
+  const currentPrice = realtimePrices[activeSymbol] ?? 0
+  const position = getPosition(activeSymbol)
+  const [buying, setBuying] = useState(false)
+  const [selling, setSelling] = useState(false)
+
+  async function quickTrade(side: OrderSide) {
+    if (!currentPrice) { toast.error("No market price"); return }
+    if (buying || selling) return
+
+    if (side === "buy") setBuying(true); else setSelling(true)
+
+    const cashForTrade = side === "buy" ? cashBalance * 0.5 : (position?.quantity ?? 0) * 0.5
+    const qty = side === "buy"
+      ? cashForTrade / currentPrice
+      : cashForTrade
+
+    if (qty <= 0) {
+      toast.error(side === "buy" ? "Insufficient balance" : "No position to sell")
+      setBuying(false); setSelling(false)
+      return
+    }
+
+    const result = executeOrder({
+      assetSymbol: activeSymbol,
+      assetType: "crypto",
+      side,
+      type: "market",
+      quantity: qty,
+      price: currentPrice,
+      currentPrice,
+    })
+
+    if (result.success) {
+      toast.success(`${side === "buy" ? "Bought" : "Sold"} ${qty.toFixed(4)} ${activeSymbol.replace("USDT", "")}`)
+    } else {
+      toast.error(result.error ?? "Order failed")
+    }
+    setBuying(false); setSelling(false)
+  }
+
+  return (
+    <div className="flex gap-1 items-center px-2 py-1.5 border-t bg-background/95 backdrop-blur-sm shrink-0">
+      <span className="text-[10px] text-muted-foreground font-medium mr-1 shrink-0">Quick Trade:</span>
+      <Button
+        size="xs"
+        className={cn("flex-1 h-7 text-xs font-semibold", buying && "opacity-50")}
+        disabled={!currentPrice || buying}
+        onClick={() => quickTrade("buy")}
+      >
+        Buy 50%
+      </Button>
+      <Button
+        size="xs"
+        variant="destructive"
+        className={cn("flex-1 h-7 text-xs font-semibold", selling && "opacity-50")}
+        disabled={!currentPrice || selling}
+        onClick={() => quickTrade("sell")}
+      >
+        Sell 50%
+      </Button>
+    </div>
   )
 }

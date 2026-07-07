@@ -4,7 +4,7 @@ import { useMarketStore } from "@/stores/marketStore"
 import { useUIStore } from "@/stores/uiStore"
 import { useRealtime, useTicker24h } from "@/hooks/useRealtime"
 import { TradingChart } from "@/components/chart/TradingChart"
-import { OrderPanel } from "@/components/trading/OrderPanel"
+import { OrderPanel, QuickTradeBar } from "@/components/trading/OrderPanel"
 import { TradeHistory } from "@/components/trading/TradeHistory"
 import { PortfolioSummary } from "@/components/portfolio/PortfolioSummary"
 import { HoldingsTable } from "@/components/portfolio/HoldingsTable"
@@ -93,7 +93,8 @@ export default function DashboardPage() {
             <TradingChart />
           </div>
 
-          <div className="shrink-0 border-t hidden sm:block">
+          <div className="shrink-0 hidden sm:block">
+            <QuickTradeBar />
             <TradeHistory />
           </div>
         </div>

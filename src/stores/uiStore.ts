@@ -35,7 +35,7 @@ export const useUIStore = create<UIState>()(
       sidebarView: "watchlist",
       aiPanelOpen: false,
       panelView: "split",
-      orderPanelOpen: false,
+      orderPanelOpen: true,
       theme: "dark",
 
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
@@ -56,6 +56,7 @@ export const useUIStore = create<UIState>()(
         aiPanelOpen: state.aiPanelOpen,
         panelView: state.panelView,
         theme: state.theme,
+        orderPanelOpen: state.orderPanelOpen,
       }),
     }
   )

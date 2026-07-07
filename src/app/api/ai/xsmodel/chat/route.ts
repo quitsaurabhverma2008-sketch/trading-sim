@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server"
-import { executeTool } from "@/lib/ai/tools"
 import { calcAllIndicators, findSupportResistance } from "@/lib/market/indicators"
+import { fetchStockCandles } from "@/lib/market/stocks"
 import type { Candle } from "@/types"
 
 const CRYPTO_SYMBOLS = new Set([
@@ -190,22 +190,15 @@ export async function POST(request: NextRequest) {
       return new Response(JSON.stringify({ choices: [{ message: { content: msg }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
     }
 
-    try {
-      const result = await executeTool("get_historical_data", { symbol: symbol ?? "AAPL", interval: "1h", limit: "200" })
-      if (result && !result.startsWith("Error")) {
-        const parsed = JSON.parse(result)
-        const cd = typeof parsed === "string" ? JSON.parse(parsed) : parsed
-        if (cd.candlesCount && cd.currentPrice) {
-          const analysis = generateFromCandles(
-            [{ time: Date.now()/1000, open: cd.open||0, high: cd.high||0, low: cd.low||0, close: cd.currentPrice, volume: cd.volume||0 }],
-            symbol ?? "STOCK", "1h"
-          )
-          const full = `## Technical Analysis — ${symbol ?? "Stock"}\n\n${analysis}`
-          if (stream) return createSSEResponse(full)
-          return new Response(JSON.stringify({ choices: [{ message: { content: full }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
-        }
+    if (symbol) {
+      const stockCandles = await fetchStockCandles(symbol, "1h").catch(() => [])
+      if (stockCandles.length >= 10) {
+        const analysis = generateFromCandles(stockCandles, symbol, "1h")
+        const full = `## Technical Analysis — ${symbol}\n\n${analysis}`
+        if (stream) return createSSEResponse(full)
+        return new Response(JSON.stringify({ choices: [{ message: { content: full }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
       }
-    } catch {}
+    }
 
     const fallback = `Hello! I'm TradeSim's Built-in AI assistant.\n\nI can help analyze stocks (AAPL, MSFT, TSLA, etc.) using real-time Yahoo Finance data. For crypto chart analysis, use the "AI" button on the chart itself.\n\nTry asking: "Analyze AAPL" or "What's the trend for MSFT?"\n\n> This is an educational simulation only — not financial advice.`
     if (stream) return createSSEResponse(fallback)

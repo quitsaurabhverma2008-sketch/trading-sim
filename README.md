@@ -28,6 +28,8 @@
 
 - **$10,000 demo balance** — reset anytime
 - Market, Limit & Stop-Loss orders
+- **OrderPanel always visible** — buy/sell accessible immediately on dashboard
+- **Quick Trade Bar** — persistent Buy 50% / Sell 50% buttons below the chart for one-click trading
 - 25/50/75/100% quick position sizing
 - Real-time unrealized & realized P&L tracking
 - Filterable trade history with date/symbol/type/P&L columns
@@ -118,6 +120,19 @@ The AI system prompt evolved through **4 leaked prompt inspirations**:
 | **v3** | Claude Fable 5 + Opus 4.8 leaks | `<default_stance>`, `<data_first>`, `<evenhandedness>`, `<legal_and_financial_advice>`, 5-section output, Prediction Card, no CoT leak |
 | **v3.1** | DeepSeek R1 + GPT Codex patterns | `<tools_available>` section listing 7 tools, human-readable tool output |
 | **v4.0** | Gemini 3.5 Flash + Claude Sonnet 5 | Warm adaptive tone, language mirroring, indicator explainers in rules, variety principle, "own it fix it continue" accountability |
+
+### Bug Fixes (v4.1)
+
+| Bug | Fix |
+|---|---|
+| Stock analysis via Built-in AI was broken (`JSON.parse` on markdown) | Replaced with direct `fetchStockCandles()` call |
+| `xsdemo.vercel.app` pointing to old deployment | Domain re-assigned to latest production |
+| Wrong TypeScript cast (`Record<string, never>`) | Fixed to `Record<string, Ticker24h>` + added missing import |
+| `limit` param ignored in stock API | Added `candles.slice(-n)` support |
+| Dead `useMemo` in FutureCandleChart | Removed unused computation block |
+| SSR-unsafe `window.location.origin` | Guarded with `typeof window !== "undefined"` |
+| OrderPanel started hidden | Default `orderPanelOpen: true` + persisted |
+| No quick-access buy/sell | Added persistent `QuickTradeBar` below chart |
 
 > See `src/lib/constants.ts:413` for the full prompt (560+ lines).
 
