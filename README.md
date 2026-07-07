@@ -2,7 +2,7 @@
 
 > **Live Demo:** [https://xsdemo.vercel.app](https://xsdemo.vercel.app)
 
-![Dashboard Overview](./public/readme/dashboard.svg)
+![Dashboard Overview](https://xsdemo.vercel.app/readme/dashboard.svg)
 
 **TradeSim** is a free, web‑based AI‑powered crypto & stock paper‑trading simulator. Practice trading with **$10,000 virtual USD**, analyze markets with **real‑time charts**, and get AI‑powered research assistance in **Hinglish** — no API key needed for the built-in AI.
 
@@ -12,7 +12,7 @@
 
 ### Real-Time Trading Dashboard
 
-![Advanced Chart with Indicators](public/readme/chart.svg)
+![Advanced Chart with Indicators](https://xsdemo.vercel.app/readme/chart.svg)
 
 | Feature | Description |
 |---|---|
@@ -31,7 +31,7 @@
 
 ### Paper Trading
 
-![Portfolio Performance](public/readme/portfolio.svg)
+![Portfolio Performance](https://xsdemo.vercel.app/readme/portfolio.svg)
 
 - **$10,000 demo balance** — reset anytime
 - Market, Limit & Stop-Loss orders
@@ -46,7 +46,7 @@
 
 ### AI Research Assistant — 9 Providers
 
-![AI Chat with Prediction Card](public/readme/ai-chat.svg)
+![AI Chat with Prediction Card](https://xsdemo.vercel.app/readme/ai-chat.svg)
 
 **Bring Your Own Key** OR use the free **Built-in AI**:
 
@@ -82,7 +82,7 @@ The AI has access to these **7 data tools** for market analysis:
 
 ### System Prompt Evolution
 
-![Prediction Card](public/readme/prediction-card.svg)
+![Prediction Card](https://xsdemo.vercel.app/readme/prediction-card.svg)
 
 The AI system prompt evolved through **4 leaked prompt inspirations**:
 
@@ -106,7 +106,7 @@ Each analysis follows a strict 5-section format:
 
 ### Screeners & Market Overview
 
-![Market Screeners](public/readme/screeners.svg)
+![Market Screeners](https://xsdemo.vercel.app/readme/screeners.svg)
 
 - **Technical Screener** — RSI, MACD crossover, MA cross, Bollinger Band breakout signals
 - **Volume Screener** — Unusual volume spikes compared to 20-period SMA
@@ -114,7 +114,7 @@ Each analysis follows a strict 5-section format:
 - **10-symbol table** with Price, Change, RSI, MACD, Volume, Signal, Regime columns
 - Sortable by any column
 
-![Crypto Market Heatmap](public/readme/heatmap.svg)
+![Crypto Market Heatmap](https://xsdemo.vercel.app/readme/heatmap.svg)
 
 **Crypto Heatmap** — Market-cap sized bubbles colored by 24h performance. Green = bullish, Red = bearish. Size = market cap. 20 top cryptocurrencies displayed in a treemap layout. Real-time data from Binance.
 
@@ -155,7 +155,7 @@ Visit **http://localhost:3000** → click **"Continue as Guest"**.
 
 ## AI Provider Setup
 
-![AI Providers](public/readme/providers.svg)
+![AI Providers](https://xsdemo.vercel.app/readme/providers.svg)
 
 1. Go to **Dashboard → AI** (`/dashboard/ai`)
 2. Open **Settings** (gear icon)
@@ -182,7 +182,7 @@ Visit **http://localhost:3000** → click **"Continue as Guest"**.
 
 ## Architecture
 
-![System Architecture](public/readme/architecture.svg)
+![System Architecture](https://xsdemo.vercel.app/readme/architecture.svg)
 
 ```
 src/
