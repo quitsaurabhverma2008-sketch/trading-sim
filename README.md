@@ -68,15 +68,15 @@
 
 The AI has access to these **7 data tools** for market analysis:
 
-| Tool | Description |
-|---|---|
-| `get_historical_data` | OHLCV candle data — any timeframe (1m to 1w) |
-| `get_realtime_quote` | Live price + 24h stats (change, high, low, volume) |
-| `get_technical_analysis` | Full RSI, MACD, SMA, EMA, BB, Support/Resistance, Volume, + Regime + Patterns |
-| `detect_patterns` | Candlestick patterns (Doji, Hammer, Engulfing, Marubozu) + Chart patterns (Breakout, Squeeze) |
-| `detect_regime` | Market regime classification: trending_up/down, ranging, volatile (ADX + ATR) |
-| `compare_symbols` | Side-by-side comparison of up to 5 symbols in a table |
-| `multi_timeframe_analysis` | Same symbol analyzed across 1h, 4h, 1d simultaneously |
+| Tool | Args | Detailed Description |
+|---|---|---|
+| `get_historical_data` | `symbol`, `interval` (1m/5m/15m/1h/4h/1d/1w), `limit` (max 500) | Binance/Yahoo se OHLCV candle data fetch karta hai. Return karta hai: period, current price, range, change%, volume, support/resistance, RSI, MACD, Bollinger Bands, Volume SMA. Har indicator ke saath value deta hai. |
+| `get_realtime_quote` | `symbol` | Live real-time price aur 24h stats deta hai. Return: current price, 24h change (absolute + percent), 24h high/low, volume, quote volume. Sabse fast tool — ek hi API call mein kaam khatam. |
+| `get_technical_analysis` | `symbol`, `interval`, `limit` | Full technical analysis package. Return karta hai: trend direction (uptrend/downtrend/sideways), market regime (trending_up/down/ranging/volatile), ADX value, ATR value + % of price, RSI with signal, MACD line/signal/histogram, Bollinger Bands (upper/middle/lower), SMA/EMA 20, support/resistance levels, volume comparison. Plus auto-detects candlestick patterns (Doji, Hammer, Engulfing, Marubozu) aur chart patterns (Breakout, Squeeze, Higher Lows). Saare ek saath — ek call mein poora analysis. |
+| `detect_patterns` | `symbol`, `interval`, `limit` | Sirf pattern detection ke liye dedicated tool. Detects 7+ candlestick patterns: **Doji** (indecision, neutral), **Hammer** (long lower wick, bullish reversal), **Shooting Star** (long upper wick, bearish reversal), **Bullish Engulfing** (strong reversal up), **Bearish Engulfing** (strong reversal down), **Marubozu** (full body, strong momentum). Plus 5 chart patterns: **Breakout Above Resistance** (price breaks above recent high), **Breakdown Below Support** (price breaks below recent low), **Higher Lows Formation** (uptrend structure), **Lower Highs Formation** (downtrend structure), **Low Volatility Squeeze** (ATR low, breakout incoming). Har pattern ko strength 1-5 rating deta hai. |
+| `detect_regime` | `symbol`, `interval`, `limit` | Market regime classification tool. ADX (Average Directional Index) + ATR (Average True Range) ka use karta hai market ki current state batane ke liye. 4 possible regimes: **trending_up** (strong uptrend, ADX > 25), **trending_down** (strong downtrend, ADX > 25), **ranging** (no clear direction, ADX < 20), **volatile** (high ATR > 4% of price). Strength bhi batata hai: strong/moderate/weak. Description mein plain English mein samjhata hai ki market mein kya chal raha hai. |
+| `compare_symbols` | `symbols` (comma-separated, max 5), `interval` | Multiple symbols ka side-by-side comparison ek table mein. Har symbol ke liye fetch karta hai: price, change%, RSI, market regime, detected patterns. Output as a markdown table with columns: Symbol, Price, Change, RSI, Regime, Patterns. Max 5 symbols ek saath compare kar sakta hai. Useful for deciding which asset is stronger/weaker. |
+| `multi_timeframe_analysis` | `symbol`, `timeframes` (comma-separated, max 4) | Ek hi symbol ko multiple timeframes pe simultaneously analyze karta hai. Har timeframe ke liye: current price, trend direction (Up/Down/Side), RSI value, market regime, ADX, aur top detected pattern. Default timeframes: 1h, 4h, 1d. Max 4 timeframes allowed. Helpful for confluence checking — agar 1h, 4h, 1d sab same direction dikha rahe hain to signal strong hota hai. |
 
 ---
 
