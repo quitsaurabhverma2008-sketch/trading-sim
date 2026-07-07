@@ -31,86 +31,95 @@ export function AIChat() {
   }, [messages])
 
   async function handleSend() {
-    const text = input.trim()
-    if (!text || isStreaming) return
-    if (!providerState.apiKey && providerState.provider !== "ollama" && providerState.provider !== "xsmodel") {
-      toast.error("Set your API key in AI settings first")
-      return
-    }
+    try {
+      const text = input.trim()
+      if (!text || isStreaming) return
+      if (!providerState.apiKey && providerState.provider !== "ollama" && providerState.provider !== "xsmodel") {
+        toast.error("Set your API key in AI settings first")
+        return
+      }
 
-    setInput("")
+      setInput("")
 
-    const userMsg: AIMessage = {
-      id: generateId(),
-      role: "user",
-      content: text,
-      timestamp: Date.now(),
-    }
-    addMessage(userMsg)
+      const userMsg: AIMessage = {
+        id: generateId(),
+        role: "user",
+        content: text,
+        timestamp: Date.now(),
+      }
+      addMessage(userMsg)
 
-    setIsStreaming(true)
-    setStreamStatus("streaming")
+      setIsStreaming(true)
+      setStreamStatus("streaming")
 
-    const chatMessages = messages
-      .concat(userMsg)
-      .slice(-50)
-      .map((m) => ({ role: m.role, content: m.content }))
+      const chatMessages = messages
+        .concat(userMsg)
+        .slice(-50)
+        .map((m) => ({ role: m.role, content: m.content }))
 
-    let fullResponse = ""
+      let fullResponse = ""
 
-    const contextSymbol = text.toLowerCase().includes("btc") ? "BTCUSDT"
-      : text.toLowerCase().includes("eth") ? "ETHUSDT"
-      : text.toLowerCase().includes("sol") ? "SOLUSDT"
-      : text.toLowerCase().includes("xrp") ? "XRPUSDT"
-      : text.toLowerCase().includes("ada") ? "ADAUSDT"
-      : text.toLowerCase().includes("doge") ? "DOGEUSDT"
-      : text.toLowerCase().includes("bnb") ? "BNBUSDT"
-      : text.toLowerCase().includes("avax") ? "AVAXUSDT"
-      : text.toLowerCase().includes("dot") ? "DOTUSDT"
-      : text.toLowerCase().includes("link") ? "LINKUSDT"
-      : activeSymbol
+      const contextSymbol = text.toLowerCase().includes("btc") ? "BTCUSDT"
+        : text.toLowerCase().includes("eth") ? "ETHUSDT"
+        : text.toLowerCase().includes("sol") ? "SOLUSDT"
+        : text.toLowerCase().includes("xrp") ? "XRPUSDT"
+        : text.toLowerCase().includes("ada") ? "ADAUSDT"
+        : text.toLowerCase().includes("doge") ? "DOGEUSDT"
+        : text.toLowerCase().includes("bnb") ? "BNBUSDT"
+        : text.toLowerCase().includes("avax") ? "AVAXUSDT"
+        : text.toLowerCase().includes("dot") ? "DOTUSDT"
+        : text.toLowerCase().includes("link") ? "LINKUSDT"
+        : activeSymbol
 
-    await streamChat(
-      providerState.provider,
-      providerState.apiKey,
-      providerState.model,
-      chatMessages,
-      {
-        onToken: (token) => {
-          if (!fullResponse) {
-            const assistantMsg: AIMessage = {
+      await streamChat(
+        providerState.provider,
+        providerState.apiKey,
+        providerState.model,
+        chatMessages,
+        {
+          onToken: (token) => {
+            if (!fullResponse) {
+              const assistantMsg: AIMessage = {
+                id: generateId(),
+                role: "assistant",
+                content: token,
+                timestamp: Date.now(),
+              }
+              addMessage(assistantMsg)
+              fullResponse = token
+            } else {
+              appendToLastAssistant(token)
+              fullResponse += token
+            }
+          },
+          onDone: () => {
+            setIsStreaming(false)
+            setStreamStatus("idle")
+          },
+          onError: (error) => {
+            setIsStreaming(false)
+            setStreamStatus("error")
+            const errMsg: AIMessage = {
               id: generateId(),
               role: "assistant",
-              content: token,
+              content: `Error: ${error}`,
               timestamp: Date.now(),
             }
-            addMessage(assistantMsg)
-            fullResponse = token
-          } else {
-            appendToLastAssistant(token)
-            fullResponse += token
-          }
+            addMessage(errMsg)
+            toast.error(error)
+          },
         },
-        onDone: () => {
-          setIsStreaming(false)
-          setStreamStatus("idle")
-        },
-        onError: (error) => {
-          setIsStreaming(false)
-          setStreamStatus("error")
-          const errMsg: AIMessage = {
-            id: generateId(),
-            role: "assistant",
-            content: `Error: ${error}`,
-            timestamp: Date.now(),
-          }
-          addMessage(errMsg)
-          toast.error(error)
-        },
-      },
-      providerState.systemPrompt || undefined,
-      contextSymbol
-    )
+        providerState.systemPrompt || undefined,
+        contextSymbol
+      )
+    } catch (err) {
+      setIsStreaming(false)
+      setStreamStatus("error")
+      const msg = err instanceof Error ? err.message : "Unexpected error"
+      const errMsg: AIMessage = { id: generateId(), role: "assistant", content: `Error: ${msg}`, timestamp: Date.now() }
+      addMessage(errMsg)
+      toast.error(msg)
+    }
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {

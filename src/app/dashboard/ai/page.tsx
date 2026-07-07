@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { AIChat } from "@/components/ai/AIChat"
 import { MultiAgentAnalysis } from "@/components/ai/MultiAgentAnalysis"
+import { ErrorBoundary } from "@/components/ai/ErrorBoundary"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Bot, Users } from "lucide-react"
 
@@ -26,7 +27,9 @@ export default function AIPage() {
         </div>
 
         <TabsContent value="chat" className="flex-1 flex flex-col min-h-0 mt-0">
-          <AIChat />
+          <ErrorBoundary>
+            <AIChat />
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="multi-agent" className="flex-1 overflow-y-auto p-4">

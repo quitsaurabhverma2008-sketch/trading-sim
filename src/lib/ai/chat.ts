@@ -11,10 +11,14 @@ export interface StreamCallbacks {
 
 async function fetchMarketContext(symbol: string): Promise<string> {
   try {
-    const [quoteResult, taResult] = await Promise.all([
-      executeTool("get_realtime_quote", { symbol }).catch(() => ""),
-      executeTool("get_technical_analysis", { symbol, interval: "1h", limit: "200" }).catch(() => ""),
+    const result = await Promise.race([
+      Promise.all([
+        executeTool("get_realtime_quote", { symbol }).catch(() => ""),
+        executeTool("get_technical_analysis", { symbol, interval: "1h", limit: "200" }).catch(() => ""),
+      ]),
+      new Promise<[string, string]>((_, reject) => setTimeout(() => reject(new Error("timeout")), 8000)),
     ])
+    const [quoteResult, taResult] = result
     return [
       `[REAL-TIME MARKET DATA - ${symbol}]`,
       quoteResult,
@@ -63,7 +67,10 @@ export async function streamChat(
   const { url, headers, body } = handler.buildRequest(request)
 
   try {
-    const res = await fetch(url, { method: "POST", headers, body })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000)
+    const res = await fetch(url, { method: "POST", headers, body, signal: controller.signal })
+    clearTimeout(timeoutId)
 
     if (!res.ok) {
       const errorText = await res.text().catch(() => "Unknown error")
