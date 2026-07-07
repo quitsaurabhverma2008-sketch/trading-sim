@@ -94,61 +94,18 @@ export const marketTools: ToolDefinition[] = [
         const candlePatterns = detectCandlestickPatterns(candles)
         const chartPatterns = detectChartPatterns(candles)
 
-        // Volume analysis
-        const recentCandles = candles.slice(-20)
-        const buyerVol = recentCandles.filter(c => c.close >= c.open).reduce((s, c) => s + c.volume, 0)
-        const sellerVol = recentCandles.filter(c => c.close < c.open).reduce((s, c) => s + c.volume, 0)
-        const totalVol = buyerVol + sellerVol
-        const buyerDominance = totalVol > 0 ? ((buyerVol / totalVol) * 100).toFixed(1) : "50.0"
-        const sellerDominance = totalVol > 0 ? ((sellerVol / totalVol) * 100).toFixed(1) : "50.0"
-        const volAboveSMA = indicators.volumeSMA && indicators.volumeSMA > 0 ? (latest.volume / indicators.volumeSMA * 100).toFixed(0) : "N/A"
-
-        // Probability calculation based on indicator consensus
-        const probFactors: { label: string; bullish: boolean; bearish: boolean }[] = []
-        if (indicators.rsi) {
-          if (indicators.rsi.value < 30) { probFactors.push({ label: "RSI Oversold", bullish: true, bearish: false }) }
-          else if (indicators.rsi.value > 70) { probFactors.push({ label: "RSI Overbought", bullish: false, bearish: true }) }
-          else if (indicators.rsi.value > 50) { probFactors.push({ label: "RSI Above 50", bullish: true, bearish: false }) }
-          else { probFactors.push({ label: "RSI Below 50", bullish: false, bearish: true }) }
-        }
-        if (indicators.macd) {
-          probFactors.push({ label: "MACD Histogram", bullish: indicators.macd.histogram > 0, bearish: indicators.macd.histogram <= 0 })
-        }
-        probFactors.push({ label: "Price vs SMA(20)", bullish: latest.close > sma20, bearish: latest.close < sma20 })
-        if (regime.regime === "trending_up") { probFactors.push({ label: "Market Regime", bullish: true, bearish: false }) }
-        else if (regime.regime === "trending_down") { probFactors.push({ label: "Market Regime", bullish: false, bearish: true }) }
-        if (buyerDominance > "55") { probFactors.push({ label: "Volume Flow", bullish: true, bearish: false }) }
-        else if (sellerDominance > "55") { probFactors.push({ label: "Volume Flow", bullish: false, bearish: true }) }
-        else { probFactors.push({ label: "Volume Flow", bullish: false, bearish: false }) }
-
-        const bullishScore = probFactors.filter(f => f.bullish).length
-        const bearishScore = probFactors.filter(f => f.bearish).length
-        const totalFactors = probFactors.length
-        const bullishPct = totalFactors > 0 ? ((bullishScore / totalFactors) * 100).toFixed(0) : "50"
-        const bearishPct = totalFactors > 0 ? ((bearishScore / totalFactors) * 100).toFixed(0) : "50"
-
-        // Risk score based on ATR % and volatility
-        let riskLevel = "Medium"
-        let riskColor = "🟡"
-        if (regime.atrPercent && regime.atrPercent > 4) { riskLevel = "High"; riskColor = "🔴" }
-        else if (regime.atrPercent && regime.atrPercent < 1.5) { riskLevel = "Low"; riskColor = "🟢" }
-        if (regime.regime === "volatile") { riskLevel = "High"; riskColor = "🔴" }
-
         let output = `## ${symbol} — Technical Analysis (${interval})
 - **Current Price:** ${latest.close}
 - **Trend:** ${trend}
 - **Market Regime:** ${regime.regime} (${regime.strength})
 - **ADX:** ${regime.adx?.toFixed(1) ?? "N/A"}
-- **ATR:** ${regime.atr?.toFixed(2) ?? "N/A"} (${regime.atrPercent?.toFixed(2) ?? "N/A"}% of price)
-- **Risk Score:** ${riskColor} ${riskLevel}
+- **ATR:** ${regime.atr?.toFixed(4) ?? "N/A"} (${regime.atrPercent?.toFixed(2) ?? "N/A"}% of price)
 - **RSI (14):** ${indicators.rsi?.value?.toFixed(2) ?? "N/A"} — ${indicators.rsi ? (indicators.rsi.overbought ? "Overbought" : indicators.rsi.oversold ? "Oversold" : "Neutral") : "N/A"}
 - **MACD:** ${indicators.macd?.macd?.toFixed(4) ?? "N/A"} | Signal: ${indicators.macd?.signal?.toFixed(4) ?? "N/A"} | Histogram: ${indicators.macd?.histogram?.toFixed(4) ?? "N/A"}
 - **Bollinger Bands (20,2):** ${indicators.bb?.lower?.toFixed(2) ?? "N/A"} ← ${indicators.bb?.middle?.toFixed(2) ?? "N/A"} → ${indicators.bb?.upper?.toFixed(2) ?? "N/A"}
 - **SMA (20):** ${sma20.toFixed(2)} | **EMA (20):** ${ema20.toFixed(2)}
 - **Support:** ${sr.support?.toFixed(2) ?? "N/A"} | **Resistance:** ${sr.resistance?.toFixed(2) ?? "N/A"}
-- **Volume Analysis:** Current ${latest.volume >= (indicators.volumeSMA ?? 0) ? "Above" : "Below"} SMA (${volAboveSMA}% of SMA) | Buyers ${buyerDominance}% | Sellers ${sellerDominance}%
-- **Bullish Probability:** ${bullishPct}% | **Bearish Probability:** ${bearishPct}%
-- **Decision Factors:** ${probFactors.map(f => `${f.label}=${f.bullish ? "Bullish" : f.bearish ? "Bearish" : "Neutral"}`).join(", ")}
+- **Volume (20 SMA):** ${indicators.volumeSMA?.toFixed(2) ?? "N/A"} | **Current Volume:** ${latest.volume}
 - **Regime:** ${regime.description}`
 
         if (candlePatterns.length > 0) {

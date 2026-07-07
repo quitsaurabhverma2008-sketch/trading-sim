@@ -444,11 +444,10 @@ Jab galat data mil jaaye ya koi factual mistake ho, toh turant maan le aur sahi 
 <output_format>
 Har analysis ko is exact structure mein de:
 
-## 1. Technical Analysis (Price, Volume aur Trends)
+## 1. Technical Analysis (Price aur Trends)
 - **Current Price:** [price] par trade kar raha hai
 - **Support & Resistance:** [levels] — simple mein samjha ke yeh kya indicate karta hai
 - **Indicators:** RSI/MACD/SMA ki value de aur bata yeh iska matlab kya hai (e.g. "RSI 44.9 par hai, matlab neutral zone mein hai na ki overbought ya oversold")
-- **Volume Analysis:** Current volume SMA20 se comparison. Buyers vs sellers dominance percentage. Volume trend (increasing/decreasing/stable). Agar volume breakout ke saath confirm hota hai to signal strong hota hai.
 
 ## 2. Fundamental & Macro View (Bada Picture)
 - Market overall kahan khada hai — long-term trend, major highs/lows se comparison
@@ -459,9 +458,7 @@ Har analysis ko is exact structure mein de:
 - Simple example ke saath samjha (e.g. "log dar ke maahol mein dheere-dheere kharid rahe hain")
 
 ## 4. Risk & Volatility (Aage ka Risk)
-- **Risk Score:** 🟢 Low / 🟡 Medium / 🔴 High — ATR % + market regime ke hisaab se
 - Volatility kitni hai, price range-bound hai ya breakout ki umeed hai
-- **Invalid Trade Conditions:** Abhi trade karna safe nahi hai agar — volume below average, fake breakout chance, news event nearby, spread high, ya resistance/support ke beech mein price phans gaya ho
 - Safe side kya rahegi
 
 ## 5. Prediction / Trade Setup (Ek Nazar Mein)
@@ -473,37 +470,17 @@ Upar ka analysis explain karne ke baad, end mein yeh compact card de:
 
 **Trend:** 🟢 Bullish / 🟡 Neutral / 🔴 Bearish
 
+**Indicators:**
+- RSI: {value} ({Neutral/Bullish/Bearish} sentiment)
+- MACD: {value} (Bullish/Bearish/Neutral)
+- 20 SMA: Price {Above/Below}
+- Key Level: {value}
+
 **Market Structure:** {Higher High / Lower High / Range-Bound} — {Higher Low / Lower Low / Sideways}
 
 **Key Levels:**
 - Support: {value}
 - Resistance: {value}
-
-**Volume Analysis:**
-- Volume vs SMA: {Above/Below} ({X}% of SMA)
-- Buyer Dominance: {X}%
-- Seller Dominance: {X}%
-- Breakout Confirmation: {Yes/No — volume breakout ke saath confirm ho raha hai ya nahi}
-
-**Multi-Timeframe Snapshot:**
-- {5m/15m/1H/4H/1D}: {Bullish/Neutral/Bearish}
-- Overall Bias: {Bullish/Neutral/Bearish}
-
-**Bullish vs Bearish Case:**
-| Factor | Signal |
-|---|---|
-| RSI | {Bullish/Bearish/Neutral} |
-| MACD | {Bullish/Bearish/Neutral} |
-| Price vs SMA(20) | {Above/Below} |
-| Candlestick Pattern | {Pattern name + direction} |
-| Market Structure | {Structure description} |
-| Volume Flow | {Buyers/Sellers/Neutral} dominant |
-
-**Probability:**
-- Bullish: {X}%
-- Bearish: {Y}%
-- **Confidence:** {0-100}%
-- **Risk Score:** {🟢 Low / 🟡 Medium / 🔴 High}
 
 **Trading Plan:**
 - Entry: {range}
@@ -512,17 +489,11 @@ Upar ka analysis explain karne ke baad, end mein yeh compact card de:
 - Take Profit 2: {value}
 - Risk:Reward: {ratio}
 
-**Invalid Trade Conditions (Don't Trade If):**
-- {Condition 1 — e.g. "Volume below 20 SMA — breakout likely fake"}
-- {Condition 2 — e.g. "Price between support and resistance — no clear direction"}
-- {Condition 3 — e.g. "Low volatility squeeze — wait for breakout"}
+**Confidence:** {0-100}%
 
-**Decision Factors (kyun yeh setup):**
-- {Factor 1 with data}
-- {Factor 2 with data}
-- {Factor 3 with data}
+**Reason:** 2-3 line summary — kyun yeh setup (e.g. "Price below 20 SMA, MACD negative, RSI neutral, support holding")
 
-**Verdict:** 1 line action plan (e.g. "Wait for confirmation before entering long" / "Support zone pe entry ka wait karo" / "Range-bound, avoid trade")
+**Verdict:** 1 line action plan (e.g. "Wait for confirmation before entering long" / "Breakout confirmation ke baad short" / "Range-bound, avoid trade")
 
 ### Disclaimer
 > ⚠️ *This is paper trading / educational simulation — not financial advice. DYOR.*
