@@ -466,11 +466,10 @@ function heatmapSVG() {
     const h = 60
     const isGreen = c.pct >= 0
     const intensity = Math.min(Math.abs(c.pct) / 10, 0.8)
-    const r = isGreen ? Math.round(34 * (1 - intensity) + 22 * intensity) : Math.round(239 * intensity + 34 * (1 - intensity))
-    const g = isGreen ? Math.round(197 * (1 - intensity) + 180 * intensity) : Math.round(68 * (1 - intensity) + 22 * intensity)
-    const b = isGreen ? Math.round(94 * (1 - intensity) + 60 * intensity) : Math.round(68 * (1 - intensity) + 22 * intensity)
-    const fill = isGreen ? `rgba(${r},${g},${b},0.85)` : `rgba(${r},${g},${b},0.85)`
-    return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" rx="6"/>
+    const fill = isGreen
+      ? `#${Math.round(34 * (1 - intensity) + 22 * intensity).toString(16).padStart(2,"0")}${Math.round(197 * (1 - intensity) + 180 * intensity).toString(16).padStart(2,"0")}${Math.round(94 * (1 - intensity) + 60 * intensity).toString(16).padStart(2,"0")}`
+      : `#${Math.round(239 * intensity + 34 * (1 - intensity)).toString(16).padStart(2,"0")}${Math.round(68 * (1 - intensity) + 22 * intensity).toString(16).padStart(2,"0")}${Math.round(68 * (1 - intensity) + 22 * intensity).toString(16).padStart(2,"0")}`
+    return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" rx="6" fill-opacity="0.85"/>
     <text x="${x+12}" y="${y+26}" fill="#fff" font-family="sans-serif" font-size="15" font-weight="bold">${c.sym}</text>
     <text x="${x+12}" y="${y+46}" fill="#fff" font-family="monospace" font-size="13" opacity="0.9">${c.pct >= 0 ? "+" : ""}${c.pct}%</text>`
   }).join("\n")}
@@ -584,7 +583,7 @@ function providersSVG() {
     const x = 60 + col * 360
     const y = 120 + row * 155
     return `<rect x="${x}" y="${y}" width="340" height="135" fill="#1a1f2e" rx="10" stroke="#2d333b" stroke-width="1"/>
-    <circle cx="${x+28}" cy="${y+30}" r="16" fill={${p.color}}" opacity="0.2"/>
+    <circle cx="${x+28}" cy="${y+30}" r="16" fill="${p.color}" opacity="0.2"/>
     <text x="${x+28}" y="${y+35}" fill="${p.color}" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">${p.icon}</text>
     <text x="${x+60}" y="${y+36}" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="bold">${p.name}</text>
     <text x="${x+20}" y="${y+62}" fill="#8b949e" font-family="monospace" font-size="11">Models:</text>
