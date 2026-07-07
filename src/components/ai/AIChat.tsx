@@ -14,6 +14,7 @@ import { Send, Bot, User, Loader2, RefreshCw, Copy, Settings } from "lucide-reac
 import { toast } from "sonner"
 import { AISettings } from "./AISettings"
 import type { AIMessage } from "@/types"
+import { FutureCandleChart, parsePrediction } from "./FutureCandleChart"
 
 export function AIChat() {
   const [showSettings, setShowSettings] = useState(false)
@@ -168,7 +169,11 @@ export function AIChat() {
         )}
 
         <div className="space-y-4">
-          {messages.map((msg) => (
+          {messages.map((msg) => {
+            const prediction = msg.role === "assistant" ? parsePrediction(msg.content) : null
+            const cleanContent = prediction ? msg.content.replace(/\[PREDICTION\][\s\S]*?\[\/PREDICTION\]/, "").trim() : msg.content
+
+            return (
             <div key={msg.id} className={cn("flex gap-3", msg.role === "user" ? "justify-end" : "justify-start")}>
               {msg.role === "assistant" && (
                 <Avatar className="h-8 w-8 shrink-0 mt-0.5">
@@ -177,17 +182,24 @@ export function AIChat() {
                   </AvatarFallback>
                 </Avatar>
               )}
-              <div className={cn("max-w-[85%] space-y-1", msg.role === "user" && "order-first")}>
-                <div
-                  className={cn(
-                    "rounded-lg px-3 py-2 text-sm",
-                    msg.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  )}
-                >
-                  <div className="whitespace-pre-wrap break-words">{msg.content}</div>
-                </div>
+              <div className={cn("max-w-[85%] space-y-2", msg.role === "user" && "order-first")}>
+                {cleanContent && (
+                  <div
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm",
+                      msg.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted"
+                    )}
+                  >
+                    <div className="whitespace-pre-wrap break-words">{cleanContent}</div>
+                  </div>
+                )}
+                {prediction && (
+                  <div className="flex justify-center">
+                    <FutureCandleChart data={prediction} />
+                  </div>
+                )}
                 {msg.role === "assistant" && !isStreaming && (
                   <div className="flex items-center gap-2 px-1">
                     <button
@@ -207,7 +219,7 @@ export function AIChat() {
                 </Avatar>
               )}
             </div>
-          ))}
+          )})}
           {isStreaming && (
             <div className="flex gap-3">
               <Avatar className="h-8 w-8 shrink-0">

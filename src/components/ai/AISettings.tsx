@@ -176,16 +176,21 @@ export function AISettings() {
       </div>
 
       <div className="space-y-2">
-        <Label className="text-xs">Max Tokens: {providerState.maxTokens}</Label>
+        <Label className="text-xs">Output Length: {providerState.maxTokens <= 1024 ? "Brief" : providerState.maxTokens <= 4096 ? "Normal" : "Detailed"}</Label>
         <input
           type="range"
-          min="256"
-          max="16384"
-          step="256"
+          min="512"
+          max="8192"
+          step="512"
           value={providerState.maxTokens}
           onChange={(e) => updateProviderState({ maxTokens: parseInt(e.target.value) })}
           className="w-full"
         />
+        <div className="flex justify-between text-[10px] text-muted-foreground">
+          <span>Brief</span>
+          <span>Normal</span>
+          <span>Detailed</span>
+        </div>
       </div>
     </div>
   )

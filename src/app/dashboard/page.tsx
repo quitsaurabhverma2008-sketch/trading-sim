@@ -15,7 +15,7 @@ import { PnLCalculator } from "@/components/trading/PnLCalculator"
 import { Button } from "@/components/ui/button"
 import { TIMEFRAMES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
-import { Brain, Activity, BookOpen, Calculator } from "lucide-react"
+import { Brain, Activity, BookOpen, Calculator, BarChart3, BookOpen as JournalIcon } from "lucide-react"
 import { useState } from "react"
 import Link from "next/link"
 
@@ -66,6 +66,18 @@ export default function DashboardPage() {
             <Activity className="h-3 w-3" />
             <span className="hidden sm:inline">Trade</span>
           </Button>
+          <Link href="/dashboard/backtest">
+            <Button variant="outline" size="xs" className="text-xs gap-1 h-7">
+              <BarChart3 className="h-3 w-3" />
+              <span className="hidden sm:inline">Backtest</span>
+            </Button>
+          </Link>
+          <Link href="/dashboard/journal">
+            <Button variant="outline" size="xs" className="text-xs gap-1 h-7">
+              <JournalIcon className="h-3 w-3" />
+              <span className="hidden sm:inline">Journal</span>
+            </Button>
+          </Link>
           <Link href="/dashboard/ai">
             <Button variant="outline" size="xs" className="text-xs gap-1 h-7">
               <Brain className="h-3 w-3" />

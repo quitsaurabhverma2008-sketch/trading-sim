@@ -7,9 +7,10 @@ import { usePortfolioStore } from "@/stores/portfolioStore"
 import { useMarketStore } from "@/stores/marketStore"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { formatCurrency } from "@/lib/utils"
-import { APP_NAME } from "@/lib/constants"
+import { formatCurrency, formatPrice } from "@/lib/utils"
+import { APP_NAME, CRYPTO_SYMBOLS } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { useEffect, useState, useRef } from "react"
 import {
   LayoutDashboard,
   LayoutGrid,
@@ -17,10 +18,10 @@ import {
   Brain,
   Menu,
   TrendingUp,
-  Bell,
   Settings,
   Star,
-  LogOut,
+  BarChart3,
+  BookOpen,
 } from "lucide-react"
 
 const NAV_ITEMS = [
@@ -28,15 +29,42 @@ const NAV_ITEMS = [
   { href: "/dashboard/portfolio", label: "Portfolio", icon: Wallet },
   { href: "/dashboard/watchlist", label: "Watchlist", icon: Star },
   { href: "/dashboard/screeners", label: "Screeners", icon: LayoutGrid },
+  { href: "/dashboard/backtest", label: "Backtest", icon: BarChart3 },
+  { href: "/dashboard/journal", label: "Journal", icon: BookOpen },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ]
+
+const TICKER_SYMBOLS = CRYPTO_SYMBOLS.slice(0, 15).map((s) => s.symbol)
 
 export function Header() {
   const pathname = usePathname()
   const { toggleSidebar, toggleAIPanel } = useUIStore()
   const { cashBalance, getSummary } = usePortfolioStore()
-  const { connectionStatus } = useMarketStore()
+  const { connectionStatus, realtimePrices, tickers } = useMarketStore()
   const summary = getSummary()
+
+  const tickerItems = TICKER_SYMBOLS.map((sym) => {
+    const price = realtimePrices[sym] ?? 0
+    const ticker = tickers[sym]
+    const change = ticker?.priceChangePercent ?? 0
+    return { sym, price, change }
+  })
+
+  const tickerRef = useRef<HTMLDivElement>(null)
+  const [tickerPaused, setTickerPaused] = useState(false)
+
+  useEffect(() => {
+    const el = tickerRef.current
+    if (!el) return
+    const handleMouseEnter = () => setTickerPaused(true)
+    const handleMouseLeave = () => setTickerPaused(false)
+    el.addEventListener("mouseenter", handleMouseEnter)
+    el.addEventListener("mouseleave", handleMouseLeave)
+    return () => {
+      el.removeEventListener("mouseenter", handleMouseEnter)
+      el.removeEventListener("mouseleave", handleMouseLeave)
+    }
+  }, [])
 
   return (
     <header className="h-14 border-b flex items-center px-4 gap-2 bg-background shrink-0">
@@ -67,7 +95,21 @@ export function Header() {
         })}
       </div>
 
-      <div className="ml-auto flex items-center gap-3">
+      <div ref={tickerRef} className={cn("flex-1 overflow-hidden mx-2", tickerPaused ? "" : "overflow-hidden")}>
+        <div className={cn("flex gap-6 animate-ticker", tickerPaused && "!animate-none")}>
+          {[...tickerItems, ...tickerItems].map((item, i) => (
+            <div key={`${item.sym}-${i}`} className="flex items-center gap-2 whitespace-nowrap shrink-0 text-xs">
+              <span className="font-medium">{item.sym.replace("USDT", "")}</span>
+              <span className="font-mono">{item.price > 0 ? formatPrice(item.price, 2) : "—"}</span>
+              <span className={cn("font-mono", item.change >= 0 ? "text-emerald-500" : "text-red-500")}>
+                {item.change >= 0 ? "+" : ""}{item.change.toFixed(2)}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 shrink-0">
         <div className="flex items-center gap-1">
           <div className={`h-2 w-2 rounded-full ${connectionStatus === "connected" ? "bg-emerald-500" : "bg-red-500"}`} />
           <span className="text-xs text-muted-foreground hidden sm:inline">

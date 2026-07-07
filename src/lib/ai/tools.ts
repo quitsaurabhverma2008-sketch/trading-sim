@@ -231,7 +231,134 @@ export const marketTools: ToolDefinition[] = [
       return output
     },
   },
+  {
+    name: "predict_next_candle",
+    description: "Predict next 1-3 candles for a symbol based on technical indicators and market regime. Returns structured prediction. Args: symbol (default BTCUSDT), interval (default 1h), limit (default 200)",
+    execute: async (args) => {
+      const symbol = (args.symbol ?? "BTCUSDT").toUpperCase()
+      const interval = args.interval ?? "1h"
+      const limit = parseInt(args.limit ?? "200")
+      try {
+        const candles = await fetchCandles(symbol, interval, Math.min(limit, 500))
+        if (candles.length < 20) return `Not enough data for ${symbol} to make a prediction`
+        const latest = candles[candles.length - 1]
+        const prev = candles[candles.length - 2]
+        const indicators = calcAllIndicators(candles)
+        const regime = detectMarketRegime(candles)
+        const atr = calcATR(candles)
+        const atrValue = atr ?? (latest.high - latest.low) * 1.5
+        const patterns = detectCandlestickPatterns(candles)
+        const chartPatterns = detectChartPatterns(candles)
+
+        const rsi = indicators.rsi?.value ?? 50
+        const macdHist = indicators.macd?.histogram ?? 0
+        const direction = predictDirection(
+          candles.map(c => c.close),
+          rsi,
+          macdHist,
+          regime
+        )
+
+        const range = atrValue
+        const currentPrice = latest.close
+        const momentum = (latest.close - prev.close) / prev.close
+
+        let predictedOpen = currentPrice
+        let predictedClose: number
+        let predictedHigh: number
+        let predictedLow: number
+        let confidence: number
+
+        if (direction === "bullish") {
+          const move = range * (0.5 + Math.abs(momentum) * 2)
+          predictedClose = currentPrice + move * (0.6 + Math.random() * 0.4)
+          predictedHigh = Math.max(currentPrice, predictedClose) + range * 0.3
+          predictedLow = Math.min(currentPrice, predictedClose) - range * 0.2
+          confidence = Math.min(85, 50 + (regime.adx ?? 25) * 2 + Math.abs(macdHist) * 100 + (rsi > 30 && rsi < 70 ? 10 : 0))
+        } else if (direction === "bearish") {
+          const move = range * (0.5 + Math.abs(momentum) * 2)
+          predictedClose = currentPrice - move * (0.6 + Math.random() * 0.4)
+          predictedHigh = Math.max(currentPrice, predictedClose) + range * 0.2
+          predictedLow = Math.min(currentPrice, predictedClose) - range * 0.3
+          confidence = Math.min(85, 50 + (regime.adx ?? 25) * 2 + Math.abs(macdHist) * 100 + (rsi > 30 && rsi < 70 ? 10 : 0))
+        } else {
+          const noise = range * 0.3
+          predictedClose = currentPrice + (Math.random() - 0.5) * noise
+          predictedHigh = Math.max(currentPrice, predictedClose) + range * 0.15
+          predictedLow = Math.min(currentPrice, predictedClose) - range * 0.15
+          confidence = Math.min(70, 40 + (regime.adx ?? 25) * 1.5)
+        }
+
+        confidence = Math.round(Math.max(20, Math.min(95, confidence)))
+
+        const targetPrice = direction === "bullish" ? predictedHigh * 1.01 : direction === "bearish" ? predictedLow * 0.99 : currentPrice
+        const stopLoss = direction === "bullish" ? predictedLow * 0.98 : direction === "bearish" ? predictedHigh * 1.02 : currentPrice
+        const rr = direction !== "neutral" ? Math.abs((targetPrice - currentPrice) / (currentPrice - stopLoss)).toFixed(2) : "—"
+
+        let patternInfo = ""
+        if (patterns.length > 0) patternInfo = `\n- **Candlestick Pattern:** ${patterns[0].name} (${patterns[0].direction})`
+        if (chartPatterns.length > 0) patternInfo += `\n- **Chart Pattern:** ${chartPatterns[0].name} (${chartPatterns[0].direction})`
+
+        let reason = ""
+        if (direction === "bullish") {
+          reason = rsi > 60 ? "Bullish momentum with strong RSI" : "Price action suggests upside move"
+          if (macdHist > 0) reason += ", MACD positive"
+          if (regime.regime === "trending_up") reason += ", in uptrend"
+        } else if (direction === "bearish") {
+          reason = rsi < 40 ? "Bearish pressure with weak RSI" : "Price action suggests downside move"
+          if (macdHist < 0) reason += ", MACD negative"
+          if (regime.regime === "trending_down") reason += ", in downtrend"
+        } else {
+          reason = "Mixed signals, range-bound action expected"
+        }
+
+        return `## ${symbol} — Next Candle Prediction (${interval})
+
+**Direction:** ${direction} | **Confidence:** ${confidence}%
+**Current Price:** ${currentPrice.toFixed(2)}
+**Predicted Open:** ${predictedOpen.toFixed(2)}
+**Predicted High:** ${predictedHigh.toFixed(2)}
+**Predicted Low:** ${predictedLow.toFixed(2)}
+**Predicted Close:** ${predictedClose.toFixed(2)}
+**Target:** ${targetPrice.toFixed(2)} | **Stop Loss:** ${stopLoss.toFixed(2)} | **R:R:** ${rr}
+
+**Market Regime:** ${regime.regime} (ADX: ${regime.adx?.toFixed(1) ?? "N/A"})
+**RSI (14):** ${rsi.toFixed(1)} | **MACD Histogram:** ${macdHist.toFixed(4)}${patternInfo}
+
+**Reason:** ${reason}
+**Prediction Range (next candle):** ${Math.min(predictedOpen, predictedLow).toFixed(2)} — ${Math.max(predictedOpen, predictedHigh).toFixed(2)}
+
+[PREDICTION]
+symbol=${symbol}
+direction=${direction}
+confidence=${confidence}
+currentPrice=${currentPrice.toFixed(2)}
+predictedOpen=${predictedOpen.toFixed(2)}
+predictedHigh=${predictedHigh.toFixed(2)}
+predictedLow=${predictedLow.toFixed(2)}
+predictedClose=${predictedClose.toFixed(2)}
+targetPrice=${targetPrice.toFixed(2)}
+stopLoss=${stopLoss.toFixed(2)}
+riskReward=${rr}
+reason=${reason}
+[/PREDICTION]`
+      } catch (err) {
+        return `Error predicting for ${symbol}: ${err instanceof Error ? err.message : "Unknown error"}`
+      }
+    },
+  },
 ]
+
+function predictDirection(closes: number[], rsi: number, macdHist: number, regime: RegimeInfo): string {
+  if (regime.regime === "volatile") return "neutral"
+  const trend = regime.regime === "trending_up" ? "bullish" : regime.regime === "trending_down" ? "bearish" : "neutral"
+  if (rsi > 70 && trend === "bullish") return "bearish"
+  if (rsi < 30 && trend === "bearish") return "bullish"
+  if (macdHist > 0 && trend === "bullish") return "bullish"
+  if (macdHist < 0 && trend === "bearish") return "bearish"
+  return trend
+}
+
 
 export async function executeTool(name: string, args: Record<string, string>): Promise<string> {
   const tool = marketTools.find((t) => t.name === name)
