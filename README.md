@@ -42,7 +42,7 @@
 
 | Provider | Key Required | Models |
 |---|---|---|
-| **Built-in AI** (TA) | ❌ Free | Technical Analysis (chart-aware, Perplexity-style system prompt) |
+| **Built-in AI** (TA) | ❌ Free | Technical Analysis + Prediction card (Hinglish, Claude Fable 5-style prompt) |
 | **OpenAI** | ✅ | GPT-4o, GPT-4o-mini, o3, o4-mini |
 | **Anthropic** | ✅ | Claude 3.5/4 Sonnet, Haiku |
 | **Google** | ✅ | Gemini 2.0/2.5 Flash, Pro |
@@ -53,9 +53,36 @@
 
 ![AI Chat](https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop)
 
-**Built-in AI** — click the **AI** button on any chart to get instant technical analysis (RSI, MACD, trend, support/resistance) based on live chart data. No setup required.
+**Built-in AI** — click the **AI** button on any chart to get instant technical analysis with a structured **prediction card** (Entry/SL/TP/R:R/Confidence/Verdict) based on live chart data. No setup required.
 
-The AI system prompt is inspired by Perplexity's leaked computer-use prompt — adapted for financial analysis with `<identity>`, `<analysis_plan>`, `<output_style>`, `<formatting>`, `<citation_instructions>`, and `<mandatory>` disclaimer sections. See `src/lib/constants.ts:402`.
+The AI outputs in **Hinglish** (Hindi-English mix) with a friendly "Bhai" tone — 4-section detailed analysis (Technical, Fundamental, Sentiment, Risk) + a compact **Prediction/Trade Setup** block at the end with Entry, Stop Loss, Take Profit, Risk:Reward, Confidence %, and Verdict.
+
+### 🧠 System Prompt Evolution
+
+The AI system prompt evolved through **3 leaked prompt inspirations**:
+
+| Iteration | Source | Key Additions |
+|---|---|---|
+| **v1** | Perplexity computer-use leak | XML structure (`<identity>`, `<analysis_plan>`, `<output_style>`), citation rules, disclaimer mandate |
+| **v2** | Gemini 3.5 Flash Hinglish | Warm peer tone, "Respond in Hinglish", simple indicator explanations |
+| **v3** | Claude Fable 5 + Opus 4.8 leaks | `<default_stance>` (naturally helpful), `<data_first>` (never skip live fetch), `<evenhandedness>` (neutral market stance), `<legal_and_financial_advice>` (factual info ≠ recommendations), `<responding_to_mistakes>` (own errors, no excuses), 5-section output with Prediction/Trade Setup card, no CoT leak, no system prompt attribution |
+
+See `src/lib/constants.ts:402` for the full prompt (504 lines).
+
+### 🎯 AI Prediction Card
+
+Every AI analysis ends with a compact structured trade setup:
+
+| Field | Example |
+|---|---|
+| **Entry** | 62900–63000 |
+| **Stop Loss** | 62380 |
+| **Take Profit 1/2** | 63450 / 63950 |
+| **Risk:Reward** | 1:2.3 |
+| **Confidence** | 68% |
+| **Verdict** | "Wait for confirmation before entering long" |
+
+The prediction card is **always preceded** by a 4-section Hinglish explanation (Technical, Fundamental, Sentiment, Risk) so users understand *why* before seeing *what*.
 
 ### 📈 Screeners
 
@@ -127,7 +154,7 @@ src/
 ├── hooks/                    # useMarketData, useRealtime, useAlertChecker
 ├── lib/
 │   ├── market/               # Binance WS/REST, Yahoo stocks, indicators
-│   ├── ai/                   # 8 providers, streaming chat, market tools
+│   ├── ai/                   # 8 providers, streaming chat, market tools, system prompt
 │   └── storage.ts            # Encrypted localStorage
 ├── stores/                   # Zustand (portfolio, market, AI, UI, alerts, watchlist)
 └── types/                    # TypeScript types
@@ -138,7 +165,8 @@ src/
 ```
 Browser ─► Binance (CORS) ──► Crypto prices, klines, WebSocket
          ─► Vercel API ──────► Yahoo Finance ──► Stock data
-         ─► /api/ai/xsmodel/chat ─► Built-in AI analysis (indicators, SSE streaming)
+         ─► /api/ai/xsmodel/chat ─► Built-in AI: 4-section Hinglish analysis + Prediction card (SSE)
+         ─► /api/ai/xsmodel ─────► Trend + Momentum + Noise prediction model
 ```
 
 ---
