@@ -14,12 +14,18 @@ interface SymbolResult {
   type: "crypto" | "stock"
 }
 
+interface PriceInfo {
+  price: number
+  changePercent: number
+}
+
 export function SymbolSearch() {
   const { activeSymbol, setActiveSymbol, realtimePrices, tickers, activeAssetType } = useMarketStore()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(false)
   const [allItems, setAllItems] = useState<SymbolResult[]>([])
+  const [prices, setPrices] = useState<Record<string, PriceInfo>>({})
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -45,7 +51,31 @@ export function SymbolSearch() {
           exchange: s.exchange,
           type: "stock" as const,
         }))
-        setAllItems([...crypto, ...stocks])
+        const all = [...crypto, ...stocks]
+        setAllItems(all)
+
+        fetch("https://api.binance.com/api/v3/ticker/24hr")
+          .then((r) => r.json())
+          .then((data: unknown[]) => {
+            const p: Record<string, PriceInfo> = {}
+            for (const t of data) {
+              const tkr = t as Record<string, unknown>
+              const sym = tkr.symbol as string
+              p[sym] = { price: parseFloat(tkr.lastPrice as string), changePercent: parseFloat(tkr.priceChangePercent as string) }
+            }
+            setPrices((prev) => ({ ...prev, ...p }))
+          })
+          .catch(() => {})
+
+        const stockSymbols = stocks.map((s) => s.symbol).join(",")
+        if (stockSymbols) {
+          fetch(`/api/market/stocks/batch?symbols=${encodeURIComponent(stockSymbols)}`)
+            .then((r) => r.json())
+            .then((data: { quotes: Record<string, PriceInfo> }) => {
+              if (data.quotes) setPrices((prev) => ({ ...prev, ...data.quotes }))
+            })
+            .catch(() => {})
+        }
       } catch {}
     }
     load()
@@ -56,8 +86,8 @@ export function SymbolSearch() {
         (s) =>
           s.symbol.toLowerCase().includes(query.toLowerCase()) ||
           s.name.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 500)
-    : allItems.slice(0, 500)
+      )
+    : allItems
 
   const cryptoItems = filtered.filter((s) => s.type === "crypto")
   const stockItems = filtered.filter((s) => s.type === "stock")
@@ -72,8 +102,11 @@ export function SymbolSearch() {
   )
 
   function renderRow(s: SymbolResult) {
-    const price = realtimePrices[s.symbol]
-    const ticker = tickers[s.symbol]
+    const storePrice = realtimePrices[s.symbol]
+    const storeTicker = tickers[s.symbol]
+    const localPrice = prices[s.symbol]
+    const displayPrice = storePrice ?? localPrice?.price
+    const displayChange = storeTicker?.priceChangePercent ?? localPrice?.changePercent
     const isSelected = s.symbol === activeSymbol
     return (
       <button
@@ -99,14 +132,14 @@ export function SymbolSearch() {
           </div>
         </div>
         <div className="text-right shrink-0">
-          {price ? (
+          {displayPrice ? (
             <>
               <div className="text-sm font-mono font-medium">
-                {formatPrice(price)}
+                {formatPrice(displayPrice)}
               </div>
-              {ticker && (
-                <div className={`text-xs font-mono ${ticker.priceChangePercent >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-                  {ticker.priceChangePercent >= 0 ? "+" : ""}{ticker.priceChangePercent.toFixed(2)}%
+              {displayChange != null && (
+                <div className={`text-xs font-mono ${displayChange >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+                  {displayChange >= 0 ? "+" : ""}{displayChange.toFixed(2)}%
                 </div>
               )}
             </>
