@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { useMarketStore } from "@/stores/marketStore"
-import { Search, TrendingUp, BarChart3 } from "lucide-react"
+import { Search, TrendingUp, BarChart3, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/utils"
 
@@ -19,11 +19,13 @@ interface PriceInfo {
   changePercent: number
 }
 
+const MAX_STOCK_PRICES = 500
+
 export function SymbolSearch() {
   const { activeSymbol, setActiveSymbol, realtimePrices, tickers, activeAssetType } = useMarketStore()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [allItems, setAllItems] = useState<SymbolResult[]>([])
   const [prices, setPrices] = useState<Record<string, PriceInfo>>({})
   const inputRef = useRef<HTMLInputElement>(null)
@@ -31,12 +33,16 @@ export function SymbolSearch() {
 
   useEffect(() => {
     async function load() {
+      setLoading(true)
       try {
         const [cryptoRes, stockRes] = await Promise.all([
-          fetch("/api/market/symbols?type=crypto&limit=2000"),
-          fetch("/api/market/symbols?type=stocks&limit=2000"),
+          fetch("/api/market/symbols?type=crypto&limit=9999"),
+          fetch("/api/market/symbols?type=stocks&limit=9999"),
         ])
-        if (!cryptoRes.ok || !stockRes.ok) return
+        if (!cryptoRes.ok || !stockRes.ok) {
+          console.error("Symbol API error", cryptoRes.status, stockRes.status)
+          return
+        }
         const cryptoData = await cryptoRes.json()
         const stockData = await stockRes.json()
         const crypto: SymbolResult[] = (cryptoData.items ?? []).map((s: { symbol: string; baseAsset: string; name: string }) => ({
@@ -45,7 +51,13 @@ export function SymbolSearch() {
           baseAsset: s.baseAsset,
           type: "crypto" as const,
         }))
-        const stocks: SymbolResult[] = (stockData.items ?? []).map((s: { symbol: string; name: string; exchange: string }) => ({
+        const seen = new Set<string>()
+        const stocks: SymbolResult[] = (stockData.items ?? []).filter((s: { symbol: string }) => {
+          const sym = s.symbol.toUpperCase()
+          if (seen.has(sym)) return false
+          seen.add(sym)
+          return true
+        }).map((s: { symbol: string; name: string; exchange: string }) => ({
           symbol: s.symbol,
           name: s.name,
           exchange: s.exchange,
@@ -61,13 +73,15 @@ export function SymbolSearch() {
             for (const t of data) {
               const tkr = t as Record<string, unknown>
               const sym = tkr.symbol as string
-              p[sym] = { price: parseFloat(tkr.lastPrice as string), changePercent: parseFloat(tkr.priceChangePercent as string) }
+              const price = parseFloat(tkr.lastPrice as string)
+              const change = parseFloat(tkr.priceChangePercent as string)
+              if (!isNaN(price)) p[sym] = { price, changePercent: change }
             }
             setPrices((prev) => ({ ...prev, ...p }))
           })
           .catch(() => {})
 
-        const stockSymbols = stocks.map((s) => s.symbol).join(",")
+        const stockSymbols = stocks.slice(0, MAX_STOCK_PRICES).map((s) => s.symbol).join(",")
         if (stockSymbols) {
           fetch(`/api/market/stocks/batch?symbols=${encodeURIComponent(stockSymbols)}`)
             .then((r) => r.json())
@@ -76,7 +90,11 @@ export function SymbolSearch() {
             })
             .catch(() => {})
         }
-      } catch {}
+      } catch (err) {
+        console.error("Symbol search load error:", err)
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [])
@@ -110,7 +128,7 @@ export function SymbolSearch() {
     const isSelected = s.symbol === activeSymbol
     return (
       <button
-        key={s.symbol}
+        key={`${s.type}-${s.symbol}`}
         onClick={() => selectSymbol(s.symbol, s.type)}
         className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-accent transition-all duration-150 ${
           isSelected ? "bg-accent" : ""
@@ -173,7 +191,7 @@ export function SymbolSearch() {
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Search 2000+ symbols..."
+            placeholder={`Search ${allItems.length.toLocaleString()}+ symbols...`}
             value={query}
             onChange={(e) => {
               setQuery(e.target.value)
@@ -199,27 +217,34 @@ export function SymbolSearch() {
       </div>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-80 bg-popover/95 backdrop-blur-xl border border-border/50 rounded-lg shadow-2xl z-50 max-h-[70vh] overflow-y-auto scrollbar-thin animate-slide-down">
+        <div className="absolute top-full left-0 mt-1 w-96 bg-popover/95 backdrop-blur-xl border border-border/50 rounded-lg shadow-2xl z-[100] max-h-[70vh] overflow-y-auto scrollbar-thin animate-slide-down">
           {loading ? (
-            <div className="p-3 text-xs text-muted-foreground">Loading...</div>
+            <div className="flex items-center justify-center gap-2 p-4 text-xs text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Loading symbols...
+            </div>
           ) : filtered.length === 0 ? (
-            <div className="p-3 text-xs text-muted-foreground">No results</div>
+            <div className="p-3 text-xs text-muted-foreground">No results — try a different search term</div>
           ) : (
             <>
               {cryptoItems.length > 0 && (
                 <>
-                  <div className="sticky top-0 bg-popover/95 backdrop-blur-xl px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50">
-                    Crypto
+                  <div className="sticky top-0 bg-popover/95 backdrop-blur-xl px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 z-10">
+                    Crypto ({cryptoItems.length})
                   </div>
-                  {cryptoItems.map((s) => renderRow(s))}
+                  <div className="divide-y divide-border/30">
+                    {cryptoItems.map((s) => renderRow(s))}
+                  </div>
                 </>
               )}
               {stockItems.length > 0 && (
                 <>
-                  <div className="sticky top-0 bg-popover/95 backdrop-blur-xl px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50">
-                    Stocks
+                  <div className="sticky top-0 bg-popover/95 backdrop-blur-xl px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 z-10">
+                    Stocks ({stockItems.length})
                   </div>
-                  {stockItems.map((s) => renderRow(s))}
+                  <div className="divide-y divide-border/30">
+                    {stockItems.map((s) => renderRow(s))}
+                  </div>
                 </>
               )}
             </>

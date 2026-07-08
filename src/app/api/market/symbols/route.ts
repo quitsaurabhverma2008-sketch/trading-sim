@@ -97,10 +97,9 @@ export async function GET(request: Request) {
     }
 
     const total = all.length
-    const start = (page - 1) * limit
-    const items = all.slice(start, start + limit)
+    const items = limit >= 2000 ? all : all.slice((page - 1) * limit, (page - 1) * limit + limit)
 
-    return NextResponse.json({ items, total, page, limit })
+    return NextResponse.json({ items, total, page: 1, limit: total })
   } catch (error) {
     console.error("Symbols API error:", error)
     return NextResponse.json(
