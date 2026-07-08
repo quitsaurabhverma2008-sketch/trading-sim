@@ -160,13 +160,28 @@ function generateFromCandles(candles: Candle[], symbol: string, timeframe: strin
   return template.join("\n\n")
 }
 
+const FALLBACK = `Hello! I'm TradeSim's Built-in AI assistant.\n\nI can help analyze stocks (AAPL, MSFT, TSLA, etc.) using real-time Yahoo Finance data. For crypto chart analysis, use the "AI" button on the chart itself.\n\nTry asking: "Analyze AAPL" or "What's the trend for MSFT?"\n\n> This is an educational simulation only — not financial advice.`
+
+function respond(text: string, stream?: boolean): Response {
+  if (stream) return createSSEResponse(text)
+  return new Response(JSON.stringify({ choices: [{ message: { content: text }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { model, messages, temperature, stream } = await request.json()
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return new Response(JSON.stringify({ error: "messages array required" }), { status: 400, headers: { "Content-Type": "application/json" } })
+    let body: Record<string, unknown>
+    try {
+      body = await request.json()
+    } catch {
+      return respond(FALLBACK, true)
     }
 
+    const messages = body.messages
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return respond(FALLBACK, true)
+    }
+
+    const stream = !!body.stream
     const lastMsg = messages.filter((m: { role: string }) => m.role === "user").pop()?.content ?? ""
     const chartPayload = extractChartData(lastMsg)
 
@@ -176,39 +191,26 @@ export async function POST(request: NextRequest) {
         const sym = chartPayload.symbol ?? extractSymbol(lastMsg) ?? "Unknown"
         const tf = chartPayload.timeframe ?? "1h"
         const analysis = generateFromCandles(candles, sym, tf)
-        const full = `## AI Chart Analysis — ${sym}\n\n${analysis}`
-        if (stream) return createSSEResponse(full)
-        return new Response(JSON.stringify({ choices: [{ message: { content: full }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
+        return respond(`## AI Chart Analysis — ${sym}\n\n${analysis}`, stream)
       }
     }
 
     const symbol = extractSymbol(lastMsg)
 
     if (symbol && CRYPTO_SYMBOLS.has(symbol)) {
-      const msg = `## ${symbol} Analysis\n\nI can't fetch live crypto data from this server (Binance blocks cloud IPs). Two options:\n\n1. **Use the chart** — Click the "AI" button on the TradingChart to analyze the chart directly (it sends the data from your browser).\n2. **Try a stock symbol** — Yahoo Finance works from this server (try AAPL, MSFT, TSLA, etc.).\n\n> This is an educational simulation only — not financial advice.`
-      if (stream) return createSSEResponse(msg)
-      return new Response(JSON.stringify({ choices: [{ message: { content: msg }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
+      return respond(`## ${symbol} Analysis\n\nI can't fetch live crypto data from this server (Binance blocks cloud IPs). Two options:\n\n1. **Use the chart** — Click the "AI" button on the TradingChart to analyze the chart directly (it sends the data from your browser).\n2. **Try a stock symbol** — Yahoo Finance works from this server (try AAPL, MSFT, TSLA, etc.).\n\n> This is an educational simulation only — not financial advice.`, stream)
     }
 
     if (symbol) {
       const stockCandles = await fetchStockCandles(symbol, "1h").catch(() => [])
       if (stockCandles.length >= 10) {
         const analysis = generateFromCandles(stockCandles, symbol, "1h")
-        const full = `## Technical Analysis — ${symbol}\n\n${analysis}`
-        if (stream) return createSSEResponse(full)
-        return new Response(JSON.stringify({ choices: [{ message: { content: full }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
+        return respond(`## Technical Analysis — ${symbol}\n\n${analysis}`, stream)
       }
     }
 
-    const fallback = `Hello! I'm TradeSim's Built-in AI assistant.\n\nI can help analyze stocks (AAPL, MSFT, TSLA, etc.) using real-time Yahoo Finance data. For crypto chart analysis, use the "AI" button on the chart itself.\n\nTry asking: "Analyze AAPL" or "What's the trend for MSFT?"\n\n> This is an educational simulation only — not financial advice.`
-    if (stream) return createSSEResponse(fallback)
-    return new Response(JSON.stringify({ choices: [{ message: { content: fallback }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } })
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Internal error"
-    const body = JSON.stringify({ error: msg })
-    if (err instanceof SyntaxError && msg.includes("JSON")) {
-      return new Response(JSON.stringify({ error: "Invalid request body", _detail: msg }), { status: 400, headers: { "Content-Type": "application/json" } })
-    }
-    return new Response(body, { status: 500, headers: { "Content-Type": "application/json" } })
+    return respond(FALLBACK, stream)
+  } catch {
+    return respond(FALLBACK, true)
   }
 }
