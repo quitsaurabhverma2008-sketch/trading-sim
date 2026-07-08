@@ -112,7 +112,7 @@ export function SymbolSearch() {
       <button
         key={s.symbol}
         onClick={() => selectSymbol(s.symbol, s.type)}
-        className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-accent transition-colors ${
+        className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-accent transition-all duration-150 ${
           isSelected ? "bg-accent" : ""
         }`}
       >
@@ -180,7 +180,7 @@ export function SymbolSearch() {
               setOpen(true)
             }}
             onFocus={() => setOpen(true)}
-            className="w-44 sm:w-56 h-8 pl-7 pr-2 text-xs"
+            className="w-44 sm:w-56 h-8 pl-7 pr-2 text-xs bg-background/50 transition-all duration-200 focus:w-56 sm:focus:w-64"
           />
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -191,7 +191,7 @@ export function SymbolSearch() {
             {currentPrice ? formatPrice(currentPrice) : "—"}
           </span>
           {currentTicker && (
-            <span className={`text-xs font-mono ${isUp ? "text-emerald-500" : "text-red-500"}`}>
+            <span className={`text-xs font-mono transition-colors duration-300 ${isUp ? "text-emerald-500" : "text-red-500"}`}>
               {isUp ? "+" : ""}{currentTicker.priceChangePercent.toFixed(2)}%
             </span>
           )}
@@ -199,7 +199,7 @@ export function SymbolSearch() {
       </div>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-80 bg-popover border border-border rounded-lg shadow-xl z-50 max-h-[70vh] overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1 w-80 bg-popover/95 backdrop-blur-xl border border-border/50 rounded-lg shadow-2xl z-50 max-h-[70vh] overflow-y-auto scrollbar-thin animate-slide-down">
           {loading ? (
             <div className="p-3 text-xs text-muted-foreground">Loading...</div>
           ) : filtered.length === 0 ? (
@@ -208,7 +208,7 @@ export function SymbolSearch() {
             <>
               {cryptoItems.length > 0 && (
                 <>
-                  <div className="sticky top-0 bg-popover px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b">
+                  <div className="sticky top-0 bg-popover/95 backdrop-blur-xl px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50">
                     Crypto
                   </div>
                   {cryptoItems.map((s) => renderRow(s))}
@@ -216,7 +216,7 @@ export function SymbolSearch() {
               )}
               {stockItems.length > 0 && (
                 <>
-                  <div className="sticky top-0 bg-popover px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b">
+                  <div className="sticky top-0 bg-popover/95 backdrop-blur-xl px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50">
                     Stocks
                   </div>
                   {stockItems.map((s) => renderRow(s))}

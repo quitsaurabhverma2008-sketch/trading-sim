@@ -12,6 +12,7 @@ import { PerformanceMetrics } from "@/components/portfolio/PerformanceMetrics"
 import { SymbolSearch } from "@/components/market/SymbolSearch"
 import { OrderBook } from "@/components/chart/OrderBook"
 import { PnLCalculator } from "@/components/trading/PnLCalculator"
+import { AnimatedSection } from "@/components/ui/AnimatedSection"
 import { Button } from "@/components/ui/button"
 import { TIMEFRAMES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
@@ -34,8 +35,8 @@ export default function DashboardPage() {
   useTicker24h(TOP_CRYPTO)
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center gap-2 px-3 py-2 border-b shrink-0 overflow-x-auto">
+    <div className="h-full flex flex-col animate-slide-up">
+      <div className="flex items-center gap-2 px-3 py-2 border-b shrink-0 overflow-x-auto glass rounded-none">
         <SymbolSearch />
 
         <div className="flex items-center gap-0.5 ml-auto">
@@ -44,7 +45,7 @@ export default function DashboardPage() {
               key={tf.id}
               variant={activeTimeframe === tf.id ? "default" : "ghost"}
               size="xs"
-              className="text-[10px] sm:text-xs h-6 sm:h-7 px-1.5 sm:px-2"
+              className="text-[10px] sm:text-xs h-6 sm:h-7 px-1.5 sm:px-2 transition-all duration-200"
               onClick={() => setActiveTimeframe(tf.id)}
             >
               {tf.label}
@@ -53,7 +54,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          <div className={cn("h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full", connectionStatus === "connected" ? "bg-emerald-500" : "bg-red-500")} title={connectionStatus} />
+          <div className={cn("h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full transition-colors duration-500", connectionStatus === "connected" ? "bg-emerald-500 animate-glow-pulse" : "bg-red-500")} title={connectionStatus} />
           <Button variant={showOrderBook ? "default" : "outline"} size="xs" className="text-xs gap-1 h-7" onClick={() => setShowOrderBook((p) => !p)} title="Order Book">
             <BookOpen className="h-3 w-3" />
             <span className="hidden sm:inline">Depth</span>
@@ -100,23 +101,31 @@ export default function DashboardPage() {
         </div>
 
         <div className="w-full lg:w-80 shrink-0 border-t lg:border-t-0 lg:border-l flex flex-col overflow-hidden max-h-[40vh] lg:max-h-none">
-          <div className="p-2 sm:p-3 space-y-2 sm:space-y-3 overflow-y-auto">
-            <PortfolioSummary />
-            <div className="hidden sm:block">
+          <div className="p-2 sm:p-3 space-y-2 sm:space-y-3 overflow-y-auto scrollbar-thin">
+            <AnimatedSection delay={100}>
+              <PortfolioSummary />
+            </AnimatedSection>
+            <AnimatedSection delay={200} className="hidden sm:block">
               <HoldingsTable />
-            </div>
-            <PerformanceMetrics />
+            </AnimatedSection>
+            <AnimatedSection delay={300}>
+              <PerformanceMetrics />
+            </AnimatedSection>
             {showOrderBook && (
-              <div className="border rounded-lg overflow-hidden">
-                <div className="text-[11px] font-semibold px-2 py-1.5 bg-muted/50">Order Book</div>
-                <OrderBook />
-              </div>
+              <AnimatedSection delay={150} direction="fade">
+                <div className="border rounded-lg overflow-hidden glass">
+                  <div className="text-[11px] font-semibold px-2 py-1.5 bg-muted/50">Order Book</div>
+                  <OrderBook />
+                </div>
+              </AnimatedSection>
             )}
             {showPnLCalc && (
-              <div className="border rounded-lg overflow-hidden">
-                <div className="text-[11px] font-semibold px-2 py-1.5 bg-muted/50">PnL Calculator</div>
-                <PnLCalculator />
-              </div>
+              <AnimatedSection delay={150} direction="fade">
+                <div className="border rounded-lg overflow-hidden glass">
+                  <div className="text-[11px] font-semibold px-2 py-1.5 bg-muted/50">PnL Calculator</div>
+                  <PnLCalculator />
+                </div>
+              </AnimatedSection>
             )}
             <OrderPanel />
           </div>

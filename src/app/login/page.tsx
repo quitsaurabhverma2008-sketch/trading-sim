@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { APP_NAME } from "@/lib/constants"
 import { guestLogin, login, register } from "@/lib/auth"
-import { TrendingUp, User, Key, Loader2 } from "lucide-react"
+import { MarketParticles } from "@/components/three/MarketParticles"
+import { PriceGlobe } from "@/components/three/PriceGlobe"
+import { TrendingUp, User, Key, Loader2, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 
 export default function LoginPage() {
@@ -46,33 +48,42 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <MarketParticles count={100} speed={0.3} interactive={true} />
+
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5" />
+
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none">
+        <div className="w-[600px] h-[600px] rounded-full bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 blur-3xl animate-aurora" />
+      </div>
+
+      <Card className="relative w-full max-w-sm bg-background/80 backdrop-blur-xl border-border/50 shadow-2xl">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-2">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-emerald-500" />
-            </div>
+          <div className="flex justify-center mb-3">
+            <PriceGlobe size={80} />
           </div>
-          <CardTitle className="text-lg">{APP_NAME}</CardTitle>
+          <CardTitle className="text-lg font-bold">
+            <span className="text-gradient">{APP_NAME}</span>
+          </CardTitle>
           <CardDescription className="text-xs">
             AI-Powered Paper Trading Simulator
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           <Button
             variant="default"
-            className="w-full gap-2"
+            className="w-full gap-2 h-10 relative overflow-hidden group"
             onClick={handleGuest}
             disabled={loading}
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <User className="h-4 w-4" />}
-            Continue as Guest
+            <span className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            <span className="relative">Continue as Guest</span>
           </Button>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-border/50" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card px-2 text-muted-foreground">or</span>
@@ -87,7 +98,7 @@ export default function LoginPage() {
                 placeholder="demo@tradesim.local"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-9 text-sm"
+                className="h-9 text-sm bg-background/50"
                 disabled={loading}
               />
             </div>
@@ -98,7 +109,7 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-9 text-sm"
+                className="h-9 text-sm bg-background/50"
                 disabled={loading}
               />
             </div>

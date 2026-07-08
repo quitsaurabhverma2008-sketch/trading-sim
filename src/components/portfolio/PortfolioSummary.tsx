@@ -65,13 +65,13 @@ export function PortfolioSummary() {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {items.map((item) => (
-        <Card key={item.label}>
+        <Card key={item.label} className="card-glow glass border-border/30 transition-all duration-300 hover:border-border/60">
           <CardContent className="p-3">
             <div className="flex items-center gap-2 mb-1">
               <item.icon className={`h-4 w-4 ${item.color}`} />
               <span className="text-xs text-muted-foreground">{item.label}</span>
             </div>
-            <div className={cn("text-lg font-bold font-mono", item.label === "P&L" ? item.color : "")}>
+            <div className={cn("text-lg font-bold font-mono transition-colors duration-300", item.label === "P&L" ? item.color : "")}>
               {item.value}
             </div>
           </CardContent>

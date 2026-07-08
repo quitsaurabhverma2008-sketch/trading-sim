@@ -67,14 +67,14 @@ export function Header() {
   }, [])
 
   return (
-    <header className="h-14 border-b flex items-center px-4 gap-2 bg-background shrink-0">
+    <header className="relative h-14 border-b flex items-center px-4 gap-2 bg-background/80 backdrop-blur-xl shrink-0 z-20">
       <Button variant="ghost" size="icon" onClick={toggleSidebar} className="shrink-0">
         <Menu className="h-5 w-5" />
       </Button>
 
-      <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-lg mr-2 shrink-0">
-        <TrendingUp className="h-5 w-5 text-emerald-500" />
-        <span className="hidden sm:inline">{APP_NAME}</span>
+      <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-lg mr-2 shrink-0 group">
+        <TrendingUp className="h-5 w-5 text-emerald-500 transition-transform duration-300 group-hover:scale-110" />
+        <span className="hidden sm:inline bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-400">{APP_NAME}</span>
       </Link>
 
       <div className="flex items-center gap-0.5">
@@ -85,7 +85,7 @@ export function Header() {
               <Button
                 variant={isActive ? "secondary" : "ghost"}
                 size="sm"
-                className="h-8 text-xs gap-1"
+                className="h-8 text-xs gap-1 transition-all duration-200"
               >
                 <item.icon className="h-3.5 w-3.5" />
                 <span className="hidden lg:inline">{item.label}</span>
@@ -101,7 +101,7 @@ export function Header() {
             <div key={`${item.sym}-${i}`} className="flex items-center gap-2 whitespace-nowrap shrink-0 text-xs">
               <span className="font-medium">{item.sym.replace("USDT", "")}</span>
               <span className="font-mono">{item.price > 0 ? formatPrice(item.price, 2) : "—"}</span>
-              <span className={cn("font-mono", item.change >= 0 ? "text-emerald-500" : "text-red-500")}>
+              <span className={cn("font-mono transition-colors duration-300", item.change >= 0 ? "text-emerald-500" : "text-red-500")}>
                 {item.change >= 0 ? "+" : ""}{item.change.toFixed(2)}%
               </span>
             </div>
@@ -111,26 +111,26 @@ export function Header() {
 
       <div className="flex items-center gap-3 shrink-0">
         <div className="flex items-center gap-1">
-          <div className={`h-2 w-2 rounded-full ${connectionStatus === "connected" ? "bg-emerald-500" : "bg-red-500"}`} />
+          <div className={cn("h-2 w-2 rounded-full transition-all duration-500", connectionStatus === "connected" ? "bg-emerald-500 animate-glow-pulse" : "bg-red-500")} />
           <span className="text-xs text-muted-foreground hidden sm:inline">
             {connectionStatus === "connected" ? "Live" : "Offline"}
           </span>
         </div>
 
-        <Badge variant="outline" className="text-sm font-mono hidden sm:flex">
+        <Badge variant="outline" className="text-sm font-mono hidden sm:flex glass">
           <Wallet className="h-3.5 w-3.5 mr-1.5" />
           {formatCurrency(summary.totalBalance)}
         </Badge>
 
         <Badge
           variant="outline"
-          className={`text-sm font-mono hidden md:flex ${summary.totalPnl >= 0 ? "text-emerald-500" : "text-red-500"}`}
+          className={cn("text-sm font-mono hidden md:flex glass", summary.totalPnl >= 0 ? "text-emerald-500" : "text-red-500")}
         >
           {summary.totalPnl >= 0 ? "+" : ""}
           {formatCurrency(summary.totalPnl)}
         </Badge>
 
-        <Button variant="ghost" size="icon" className="h-8 w-8 relative" onClick={toggleAIPanel}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative transition-transform duration-200 hover:scale-110" onClick={toggleAIPanel}>
           <Brain className="h-4 w-4" />
         </Button>
       </div>
