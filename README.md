@@ -20,9 +20,11 @@
 | **Chart Patterns** | Breakout/breakdown, Higher Lows, Lower Highs, Volatility Squeeze |
 | **Order Book** | 15-level depth with 3s polling |
 | **PnL Calculator** | Long/Short with entry/exit prices, position sizing |
-| **Symbol Search** | 1500+ symbols (440+ crypto, 1081 stocks) |
+| **Symbol Search** | 2000+ symbols (440+ crypto, 1500+ stocks) with real-time prices & percent change |
 | **Timeframes** | 1m, 5m, 15m, 30m, 1h, 4h, 1D, 1W |
 | **Animated Price Ticker** | Scrolling ticker in header with top 15 crypto prices, pauses on hover |
+| **3D Particle Background** | Interactive Three.js particle field with mouse parallax |
+| **Animated UI** | Anime.js scroll-triggered reveals, animated counters, glass morphism cards |
 
 ### Paper Trading
 
@@ -201,8 +203,9 @@ src/
 │   ├── layout/                   # Header (price ticker), Sidebar, Disclaimer
 │   ├── market/                   # SymbolSearch, Heatmap, Screeners, SentimentDashboard
 │   ├── portfolio/                # PortfolioSummary, BenchmarkComparison, HoldingsTable
+│   ├── three/                    # MarketParticles (3D particle bg), PriceGlobe (3D globe)
 │   ├── trading/                  # OrderPanel, StrategyBacktester, TradeJournal, PnLCalculator
-│   └── ui/                       # shadcn/ui v4 (@base-ui/react) components
+│   └── ui/                       # shadcn/ui v4 (@base-ui/react), AnimatedSection
 ├── hooks/                        # useMarketData, useRealtime, useBenchmarkData, useKeyboardShortcuts
 ├── lib/
 │   ├── market/                   # binance.ts (WS+REST), stocks.ts (Yahoo), indicators.ts (28 funcs)
@@ -255,6 +258,8 @@ Browser ──── Binance API (direct CORS fetch) ──── Crypto prices,
 | **shadcn/ui v4** | Component library (@base-ui/react, not Radix) |
 | **Zustand 5** | State management + persist middleware |
 | **Lightweight Charts v5** | High-performance candlestick charts |
+| **Three.js** | 3D particle backgrounds, animated globe visualization |
+| **Anime.js** | Scroll-triggered animations, animated number counters, message reveals |
 | **Binance API** | Crypto data (direct browser CORS fetch) |
 | **Yahoo Finance** | Stock data (server-side proxy via Vercel) |
 | **Web Crypto API** | AES‑GCM encryption for API key storage |
